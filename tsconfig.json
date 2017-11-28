@@ -1,19 +1,18 @@
 {
     "compilerOptions": {
-        "module": "es6",
-        "moduleResolution": "node",
-        "allowSyntheticDefaultImports": true,
+        "module": "commonjs",
         "target": "es2017",
         "lib": [
             "dom",
             "es2017"
         ],
+        "rootDir": "src",
         "outDir": "build",
         "sourceMap": true,
         "jsx": "react",
-        "allowJs": true,
         "noImplicitAny": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "baseUrl": "./src"
     },
     "exclude": [
       "**/*.spec.ts",
