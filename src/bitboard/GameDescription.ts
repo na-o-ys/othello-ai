@@ -38,12 +38,12 @@ export function toUiState(desc: GameDescription, turn: UiTypes.Color): UiTypes.C
     return turn == "b" ? cells : reverseColor(cells)
 }
 
-type Cell = "." | "b" | "w" | "-"
+type Cell = "." | "b" | "w"
 
 export function genOctetCells(row: Cell[]): OctetCells {
     return _.reduce(
         row,
-        (octet, cell) => (octet << 2) + cellToByte(cell),
+        (octet, cell) => (octet * 3) + cellToByte(cell),
         0
     )
 }
@@ -51,8 +51,7 @@ export function genOctetCells(row: Cell[]): OctetCells {
 function cellToByte(cell: Cell): number {
     if (cell === "b") return 0
     if (cell === "w") return 1
-    if (cell === ".") return 2
-    return 3
+    return 2
 }
 
 function genDiagsR(cells: Cell[]): Cell[][] {
@@ -65,7 +64,7 @@ function genDiagsR(cells: Cell[]): Cell[][] {
     const seg1 = _.range(8).map(idx =>
         _.range(8).map(x => {
             const y = idx - x
-            if (y < 0) return "-"
+            if (y < 0) return "."
             return rows[y][x]
         })
     )
@@ -79,7 +78,7 @@ function genDiagsR(cells: Cell[]): Cell[][] {
         _.range(8).map(idxX => {
             const x = idxX + 1 + idxY
             const y = 7 - idxX
-            if (x > 7) return "-"
+            if (x > 7) return "."
             return rows[y][x]
         })
     )
@@ -92,7 +91,7 @@ function genDiagsL(cells: Cell[]): Cell[][] {
     const seg1 = _.range(8).map(idx =>
         _.range(8).map(x => {
             const y = idx - x
-            if (y < 0) return "-"
+            if (y < 0) return "."
             return rows[y][7 - x]
         })
     )
@@ -101,7 +100,7 @@ function genDiagsL(cells: Cell[]): Cell[][] {
         _.range(8).map(idxX => {
             const x = idxX + 1 + idxY
             const y = 7 - idxX
-            if (x > 7) return "-"
+            if (x > 7) return "."
             return rows[y][7 - x]
         })
     )
@@ -126,13 +125,14 @@ function reverseColor(cells: UiTypes.CellState[]): UiTypes.CellState[] {
 }
 
 export function octetCellsToCells(octetCells: OctetCells): Cell[] {
-    return _.range(8).map(idx => {
-        const byte = (octetCells >> (2 * (7 - idx))) & 3
+    let base = 1
+    return _.range(8).map(() => {
+        const byte = ((octetCells / base) >> 0) % 3
+        base *= 3
         if (byte === 0) return "b"
         if (byte === 1) return "w"
-        if (byte === 2) return "."
-        return "-"
-    })
+        return "."
+    }).reverse()
 }
 
 // for debug

@@ -11,27 +11,31 @@ export function movables(desc: GameDescription): { x: number, y: number }[] {
 
 export function canMove(desc: GameDescription, x: number, y: number): boolean {
     // row
-    if (BitBoard[desc.rows[y]][x]) return true
+    if (BitBoard[desc.rows[y]][x] !== 0) return true
     // col
-    if (BitBoard[desc.cols[x]][y]) return true
+    if (BitBoard[desc.cols[x]][y] !== 0) return true
     // diagR
     const diagR = desc.diagsR[x + y]
     if (x + y < 8) {
         // seg1
-        if (BitBoard[diagR][x]) return true
+        const mask = (1 << x + y + 1) - 1
+        if ((BitBoard[diagR][x] & mask) !== 0) return true
     } else {
         // seg2
-        if (BitBoard[diagR][7 - y]) return true
+        const mask = (1 << (16 - x - y)) - 1
+        if ((BitBoard[diagR][7 - y] & mask) !== 0) return true
     }
     // diagL
     const rx = 7 - x
     const diagL = desc.diagsL[rx + y]
     if (rx + y < 8) {
         // seg1
-        if (BitBoard[diagL][rx]) return true
+        const mask = (1 << rx + y + 1) - 1
+        if ((BitBoard[diagL][rx] & mask) !== 0) return true
     } else {
         // seg2
-        if (BitBoard[diagL][7 - y]) return true
+        const mask = (1 << (16 - rx - y)) - 1
+        if ((BitBoard[diagL][7 - y] & mask) !== 0) return true
     }
     return false
 }

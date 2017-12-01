@@ -10,11 +10,12 @@ export function randomBoard(): GameDescription {
 export function bench() {
     const start = new Date().getTime()
     let itr = 0
+    let sum = 0
     while (new Date().getTime() - start < 5000) {
         const desc = randomBoard()
-        Array(500).map(() => Rule.movables(desc))
+        Array(100000).map(() => { sum += Rule.movables(desc).length })
         itr += 1
     }
-    const mmps = itr * 500 / 5 / 1000000
+    const mmps = itr * 100000 / 5 / 1000000
     console.log(`${mmps} Mm/s`)
 }

@@ -15,6 +15,7 @@ function cells(state: CellState[], action: Action): CellState[] {
 export function reducers(state: GameState, action: Action): GameState  {
     if (action.type == "click_cell") {
         const desc = fromUiState(state)
+        console.log(Rule.movables(desc))
         if (!Rule.canMove(desc, action.place.x, action.place.y)) return state
 
         const moved = Rule.move(desc, action.place.x, action.place.y)

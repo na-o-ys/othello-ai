@@ -1,17 +1,11 @@
 import * as _ from "lodash"
 import { octetCellsToCells, genOctetCells, OctetCells } from "bitboard/GameDescription"
 
-interface BitBoardEntry {
-    [key: number]: OctetCells | undefined
-}
-
-export const BitBoard: BitBoardEntry[] = _.range(1<<16).map(i => {
+export const BitBoard: number[][] = _.range(Math.pow(3, 8)).map(i => {
     const currCells = octetCellsToCells(i)
-    let entry: BitBoardEntry = {}
 
-    _.range(8).forEach(x => {
-        if (currCells[x] !== ".") return
-        const cells = _.clone(currCells)
+    return _.range(8).map(x => {
+        if (currCells[x] !== ".") return 0
         // 左方向
         let lEnd = x
         if (x - 1 >= 0 && currCells[x - 1] === "w") {
@@ -20,7 +14,7 @@ export const BitBoard: BitBoardEntry[] = _.range(1<<16).map(i => {
                     lEnd = j
                     break
                 }
-                if (currCells[j] === "." || currCells[j] === "-") break
+                if (currCells[j] === ".") break
             }
         }
         let rEnd = x
@@ -30,16 +24,14 @@ export const BitBoard: BitBoardEntry[] = _.range(1<<16).map(i => {
                     rEnd = j
                     break
                 }
-                if (currCells[j] === "." || currCells[j] === "-") break
+                if (currCells[j] === ".") break
             }
         }
-        if (lEnd != rEnd) {
-            for (let j = lEnd; j <= rEnd; j++) {
-                cells[j] = "b"
-            }
-            entry[x] = genOctetCells(cells)
+        if (lEnd == rEnd) return 0
+        let mask = 0
+        for (let j = lEnd; j <= rEnd; j++) {
+            mask |= (1 << j)
         }
+        return mask
     })
-
-    return entry
 })
