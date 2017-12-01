@@ -1,30 +1,37 @@
-import { GameDescription, fromUiState, toUiState, octetCellsToCells } from "GameDescription"
-import { BitBoard } from "BitBoard"
+import * as _ from "lodash"
+import { GameDescription, fromUiState, toUiState, octetCellsToCells } from "bitboard/GameDescription"
+import { BitBoard } from "bitboard/BitBoard"
 import * as UiTypes from "ui/types"
+
+export function movables(desc: GameDescription): { x: number, y: number }[] {
+    return _.range(8 * 8)
+        .filter(i => canMove(desc, i % 8, (i / 8) >> 0))
+        .map(i => ({ x: i % 8, y: (i / 8) >> 0}))
+}
 
 export function canMove(desc: GameDescription, x: number, y: number): boolean {
     // row
-    if (BitBoard[desc.rows[y]][x]) return true
+    if (BitBoard[desc.rows[y]][x] != -1) return true
     // col
-    if (BitBoard[desc.cols[x]][y]) return true
+    if (BitBoard[desc.cols[x]][y] != -1) return true
     // diagR
     const diagR = desc.diagsR[x + y]
     if (x + y < 8) {
         // seg1
-        if (BitBoard[diagR][x]) return true
+        if (BitBoard[diagR][x] != -1) return true
     } else {
         // seg2
-        if (BitBoard[diagR][7 - y]) return true
+        if (BitBoard[diagR][7 - y] != -1) return true
     }
     // diagL
     const rx = 7 - x
     const diagL = desc.diagsL[rx + y]
     if (rx + y < 8) {
         // seg1
-        if (BitBoard[diagL][rx]) return true
+        if (BitBoard[diagL][rx] != -1) return true
     } else {
         // seg2
-        if (BitBoard[diagL][7 - y]) return true
+        if (BitBoard[diagL][7 - y] != -1) return true
     }
     return false
 }
@@ -33,7 +40,7 @@ export function move(desc: GameDescription, x: number, y: number): GameDescripti
     const cells = toUiState(desc, "b")
     // row
     const nextRow = BitBoard[desc.rows[y]][x]
-    if (nextRow) {
+    if (nextRow != -1) {
         octetCellsToCells(nextRow)
             .forEach((cell, ix) => {
                 cells[8 * y + ix] = cell as UiTypes.CellState
@@ -41,7 +48,7 @@ export function move(desc: GameDescription, x: number, y: number): GameDescripti
     }
     // col
     const nextCol = BitBoard[desc.cols[x]][y]
-    if (nextCol) {
+    if (nextCol != -1) {
         octetCellsToCells(nextCol)
             .forEach((cell, iy) => {
                 cells[8 * iy + x] = cell as UiTypes.CellState
@@ -52,7 +59,7 @@ export function move(desc: GameDescription, x: number, y: number): GameDescripti
     if (x + y < 8) {
         // seg1
         const nextDiag = BitBoard[diagR][x]
-        if (nextDiag) {
+        if (nextDiag != -1) {
             octetCellsToCells(nextDiag)
                 .forEach((cell, ix) => {
                     const iy = (x + y) - ix
@@ -63,7 +70,7 @@ export function move(desc: GameDescription, x: number, y: number): GameDescripti
     } else {
         // seg2
         const nextDiag = BitBoard[diagR][7 - y]
-        if (nextDiag) {
+        if (nextDiag != -1) {
             octetCellsToCells(nextDiag)
                 .forEach((cell, i) => {
                     const ix = (x + y - 7) + i
@@ -79,7 +86,7 @@ export function move(desc: GameDescription, x: number, y: number): GameDescripti
     if (rx + y < 8) {
         // seg1
         const nextDiag = BitBoard[diagL][rx]
-        if (nextDiag) {
+        if (nextDiag != -1) {
             octetCellsToCells(nextDiag)
                 .forEach((cell, ix) => {
                     const iy = (rx + y) - ix
@@ -90,7 +97,7 @@ export function move(desc: GameDescription, x: number, y: number): GameDescripti
     } else {
         // seg2
         const nextDiag = BitBoard[diagL][7 - y]
-        if (nextDiag) {
+        if (nextDiag != -1) {
             octetCellsToCells(nextDiag)
                 .forEach((cell, i) => {
                     const ix = (rx + y - 7) + i

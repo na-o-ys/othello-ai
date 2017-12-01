@@ -7,12 +7,14 @@ import { Provider } from "react-redux"
 import { Game, GameState } from "ui/containers/Game"
 import { reducers } from "ui/reducers"
 import { initialBoard } from "ui/constants"
+import { bench } from "bitboard/bench"
 
 const middleWares: Middleware[] = [
     process.env.NODE_ENV !== "production" && createLogger() as any
 ].filter(Boolean)
 
 export function start(dom: HTMLElement | null) {
+    // bench()
     let store = createStore<GameState>(
         reducers,
         {
