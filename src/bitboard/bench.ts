@@ -1,6 +1,6 @@
 import * as _ from "lodash"
-import { GameDescription, fromUiState } from "GameDescription"
-import * as Rule from "rule"
+import { GameDescription, fromUiState } from "bitboard/GameDescription"
+import * as Rule from "bitboard/rule"
 
 export function randomBoard(): GameDescription {
     const cells: any = Array(64).map(() => _.sample(["b", "w", "."]))

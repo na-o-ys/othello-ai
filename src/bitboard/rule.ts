@@ -1,6 +1,6 @@
 import * as _ from "lodash"
-import { GameDescription, fromUiState, toUiState, octetCellsToCells } from "GameDescription"
-import { BitBoard } from "BitBoard"
+import { GameDescription, fromUiState, toUiState, octetCellsToCells } from "bitboard/GameDescription"
+import { BitBoard } from "bitboard/BitBoard"
 import * as UiTypes from "ui/types"
 
 export function movables(desc: GameDescription): { x: number, y: number }[] {

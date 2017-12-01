@@ -7,7 +7,7 @@ import { Provider } from "react-redux"
 import { Game, GameState } from "ui/containers/Game"
 import { reducers } from "ui/reducers"
 import { initialBoard } from "ui/constants"
-import { bench } from "bench"
+import { bench } from "bitboard/bench"
 
 const middleWares: Middleware[] = [
     process.env.NODE_ENV !== "production" && createLogger() as any

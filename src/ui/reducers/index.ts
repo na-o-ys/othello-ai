@@ -1,8 +1,8 @@
 import { GameState } from "ui/containers/Game"
 import { Action } from "ui/actions"
 import { Color, CellState, Place } from "ui/types"
-import { fromUiState, toUiState, showOctetCols, showOctetDiags } from "GameDescription"
-import * as Rule from "rule"
+import { fromUiState, toUiState, showOctetCols, showOctetDiags } from "bitboard/GameDescription"
+import * as Rule from "bitboard/rule"
 
 function turn(state: Color, action: Action): Color {
     return state == "b" ? "w" : "b"

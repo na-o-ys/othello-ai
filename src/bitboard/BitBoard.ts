@@ -1,5 +1,5 @@
 import * as _ from "lodash"
-import { octetCellsToCells, genOctetCells, OctetCells } from "GameDescription"
+import { octetCellsToCells, genOctetCells, OctetCells } from "bitboard/GameDescription"
 
 interface BitBoardEntry {
     [key: number]: OctetCells | undefined
