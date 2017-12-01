@@ -1,6 +1,13 @@
+import * as _ from "lodash"
 import { GameDescription, fromUiState, toUiState, octetCellsToCells } from "GameDescription"
 import { BitBoard } from "BitBoard"
 import * as UiTypes from "ui/types"
+
+export function movables(desc: GameDescription): { x: number, y: number }[] {
+    return _.range(8 * 8)
+        .filter(i => canMove(desc, i % 8, (i / 8) >> 0))
+        .map(i => ({ x: i % 8, y: (i / 8) >> 0}))
+}
 
 export function canMove(desc: GameDescription, x: number, y: number): boolean {
     // row
