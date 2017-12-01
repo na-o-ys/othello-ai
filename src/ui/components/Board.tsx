@@ -2,7 +2,7 @@ import * as React from "react"
 import * as _ from "lodash"
 import { Place, CellState } from "ui/types"
 import { Cell } from "ui/components/Cell"
-import * as styleConst from "ui/styleConstants"
+import * as style from "ui/constants/style"
 
 export interface BoardProps {
     cells: CellState[]
@@ -21,8 +21,8 @@ export const Board = (props: BoardProps) => (
 )
 
 const boardStyle = (scale: number = 1) => ({
-    width: styleConst.boardWidth,
-    height: styleConst.boardWidth
+    width: style.boardWidth,
+    height: style.boardWidth
 })
 
 export interface BoardRowProps {
@@ -43,6 +43,6 @@ export const BoardRow = (props: BoardRowProps) => (
 )
 
 const boardRowStyle = (scale: number = 1) => ({
-    width: styleConst.boardWidth,
-    height: styleConst.cellWidth + styleConst.cellMargin * 2
+    width: style.boardWidth,
+    height: style.cellWidth + style.cellMargin * 2
 })

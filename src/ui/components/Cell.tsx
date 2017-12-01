@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Place, CellState } from "ui/types"
-import * as styleConst from "ui/styleConstants"
+import * as style from "ui/constants/style"
 
 export interface CellProps {
     place: Place,
@@ -14,7 +14,7 @@ export const Cell = (props: CellProps) => (
 
 const cellStyle = (scale: number = 1) => ({
     float: "left",
-    width: styleConst.cellWidth * scale,
-    height: styleConst.cellWidth * scale,
-    margin: styleConst.cellMargin * scale
+    width: style.cellWidth * scale,
+    height: style.cellWidth * scale,
+    margin: style.cellMargin * scale
 })
