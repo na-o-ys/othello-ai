@@ -12,6 +12,7 @@ export const Board = (props: BoardProps) => (
     <div style={boardStyle()}>
     {_.range(8).map(rowIdx => (
         <BoardRow
+            key={rowIdx}
             rowIdx={rowIdx}
             cells={props.cells.slice(rowIdx * 8, (rowIdx + 1) * 8)}
         />
@@ -33,6 +34,7 @@ export const BoardRow = (props: BoardRowProps) => (
     <div style={boardRowStyle()}>
     {_.range(8).map(colIdx => (
         <Cell
+            key={colIdx}
             place={{ x: colIdx, y: props.rowIdx }}
             state={props.cells[colIdx]}
         />
