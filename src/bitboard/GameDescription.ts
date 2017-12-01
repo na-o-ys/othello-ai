@@ -1,7 +1,6 @@
 import * as _ from "lodash"
 import { GameState } from "ui/containers/Game"
 import * as UiTypes from "ui/types"
-import { reverse } from "dns";
 
 // 自石: 00
 // 相手石: 01
@@ -133,6 +132,12 @@ export function octetCellsToCells(octetCells: OctetCells): Cell[] {
         if (byte === 2) return "."
         return "-"
     })
+}
+
+export function reverse(desc: GameDescription): GameDescription {
+    const cells = octetCellRowsToUiCells(desc.rows)
+    const reversed = reverseColor(cells)
+    return fromUiState({ turn: "b", cells: reversed })
 }
 
 // for debug
