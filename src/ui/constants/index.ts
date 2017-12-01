@@ -1,6 +1,6 @@
 import { CellState } from "ui/types"
 
-export const InitialBoard: CellState[] = [
+export const initialBoard: CellState[] = [
     ".", ".", ".", ".", ".", ".", ".", ".",
     ".", ".", ".", ".", ".", ".", ".", ".",
     ".", ".", ".", ".", ".", ".", ".", ".",
