@@ -5,7 +5,12 @@ import { Cell } from "ui/components/Cell"
 import * as style from "ui/constants/style"
 
 export interface BoardProps {
-    cells: CellState[]
+    cells: CellState[],
+    onClickCell: OnClickCell
+}
+
+export interface OnClickCell {
+    (place: Place): void
 }
 
 export const Board = (props: BoardProps) => (
@@ -15,6 +20,7 @@ export const Board = (props: BoardProps) => (
             key={rowIdx}
             rowIdx={rowIdx}
             cells={props.cells.slice(rowIdx * 8, (rowIdx + 1) * 8)}
+            onClickCell={props.onClickCell}
         />
     ))}
     </div>
@@ -27,7 +33,8 @@ const boardStyle = (scale: number = 1) => ({
 
 export interface BoardRowProps {
     rowIdx: number,
-    cells: CellState[]
+    cells: CellState[],
+    onClickCell: OnClickCell
 }
 
 export const BoardRow = (props: BoardRowProps) => (
@@ -37,6 +44,7 @@ export const BoardRow = (props: BoardRowProps) => (
             key={colIdx}
             place={{ x: colIdx, y: props.rowIdx }}
             state={props.cells[colIdx]}
+            onClick={() => props.onClickCell({ x: colIdx, y: props.rowIdx })}
         />
     ))}
     </div>
