@@ -36,7 +36,7 @@ export function toUiState(desc: GameDescription, turn: UiTypes.Color): UiTypes.C
 
 type Cell = "." | "b" | "w" | "-"
 
-function genOctetCells(row: Cell[]): OctetCells {
+export function genOctetCells(row: Cell[]): OctetCells {
     return _.reduce(
         row,
         (octet, cell) => (octet << 2) + cellToByte(cell),
@@ -99,7 +99,7 @@ function reverseColor(cells: UiTypes.CellState[]): UiTypes.CellState[] {
     })
 }
 
-function octetCellsToCells(octetCells: OctetCells): Cell[] {
+export function octetCellsToCells(octetCells: OctetCells): Cell[] {
     return _.range(8).map(idx => {
         const byte = (octetCells >> (2 * (7 - idx))) & 3
         if (byte === 0) return "b"
