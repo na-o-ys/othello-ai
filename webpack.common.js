@@ -1,7 +1,7 @@
 module.exports = {
     entry: "./src/ui",
     output: {
-        filename: "./assets/app.js"
+        filename: "./assets/bundle.js"
     },
     resolve: {
         modules: [__dirname + "/src", "node_modules"],
