@@ -7,7 +7,7 @@ import { reverse } from "dns";
 // 相手石: 01
 // 空: 10
 // 壁: 11
-type OctetCells = number
+export type OctetCells = number
 
 export interface GameDescription {
     rows: OctetCells[]

@@ -17,6 +17,7 @@ export function reducers(state: GameState, action: Action): GameState  {
         const desc = fromUiState(state)
         if (!Rule.canMove(desc, action.place.x, action.place.y)) return state
 
+        console.log("Can Move!")
         const moved = Rule.move(desc, action.place.x, action.place.y)
         return {
             turn: state.turn == "b" ? "w" : "b",
