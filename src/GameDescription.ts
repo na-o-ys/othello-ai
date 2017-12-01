@@ -13,7 +13,9 @@ export interface GameDescription {
     rows: OctetCells[]
     cols: OctetCells[]
     // 左下から右上
-    diags: OctetCells[]
+    diagsR: OctetCells[]
+    // 右下から左上
+    diagsL: OctetCells[]
 }
 
 export function fromUiState({ turn, cells }: GameState): GameDescription {
@@ -23,10 +25,12 @@ export function fromUiState({ turn, cells }: GameState): GameDescription {
         .map(row => genOctetCells(row))
     const cols = (_.zip.apply(null, _.chunk(fpCells, 8)) as Cell[][])
         .map(col => genOctetCells(col))
-    const diags = genDiags(fpCells)
+    const diagsR = genDiagsR(fpCells)
+        .map(diag => genOctetCells(diag))
+    const diagsL = genDiagsL(fpCells)
         .map(diag => genOctetCells(diag))
 
-    return { rows, cols, diags }
+    return { rows, cols, diagsR, diagsL }
 }
 
 export function toUiState(desc: GameDescription, turn: UiTypes.Color): UiTypes.CellState[] {
@@ -51,7 +55,7 @@ function cellToByte(cell: Cell): number {
     return 3
 }
 
-function genDiags(cells: Cell[]): Cell[][] {
+function genDiagsR(cells: Cell[]): Cell[][] {
     const rows = _.chunk(cells, 8)
     // (0, 0), (1, -1), (2, -2), ...
     // (0, 1), (1, 0),  (2, -1), ...
@@ -77,6 +81,28 @@ function genDiags(cells: Cell[]): Cell[][] {
             const y = 7 - idxX
             if (x > 7) return "-"
             return rows[y][x]
+        })
+    )
+
+    return _.concat(seg1, seg2)
+}
+
+function genDiagsL(cells: Cell[]): Cell[][] {
+    const rows = _.chunk(cells, 8)
+    const seg1 = _.range(8).map(idx =>
+        _.range(8).map(x => {
+            const y = idx - x
+            if (y < 0) return "-"
+            return rows[y][7 - x]
+        })
+    )
+
+    const seg2 = _.range(8).map(idxY =>
+        _.range(8).map(idxX => {
+            const x = idxX + 1 + idxY
+            const y = 7 - idxX
+            if (x > 7) return "-"
+            return rows[y][7 - x]
         })
     )
 

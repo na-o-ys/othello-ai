@@ -7,14 +7,24 @@ export function canMove(desc: GameDescription, x: number, y: number): boolean {
     if (BitBoard[desc.rows[y]][x]) return true
     // col
     if (BitBoard[desc.cols[x]][y]) return true
-    // diag
-    const diag = desc.diags[x + y]
+    // diagR
+    const diagR = desc.diagsR[x + y]
     if (x + y < 8) {
         // seg1
-        if (BitBoard[diag][x]) return true
+        if (BitBoard[diagR][x]) return true
     } else {
         // seg2
-        if (BitBoard[diag][7 - y]) return true
+        if (BitBoard[diagR][7 - y]) return true
+    }
+    // diagL
+    const rx = 7 - x
+    const diagL = desc.diagsL[rx + y]
+    if (rx + y < 8) {
+        // seg1
+        if (BitBoard[diagL][rx]) return true
+    } else {
+        // seg2
+        if (BitBoard[diagL][7 - y]) return true
     }
     return false
 }
@@ -37,11 +47,11 @@ export function move(desc: GameDescription, x: number, y: number): GameDescripti
                 cells[8 * iy + x] = cell as UiTypes.CellState
             })
     }
-    // diag
-    const diag = desc.diags[x + y]
+    // diagR
+    const diagR = desc.diagsR[x + y]
     if (x + y < 8) {
         // seg1
-        const nextDiag = BitBoard[diag][x]
+        const nextDiag = BitBoard[diagR][x]
         if (nextDiag) {
             octetCellsToCells(nextDiag)
                 .forEach((cell, ix) => {
@@ -52,7 +62,7 @@ export function move(desc: GameDescription, x: number, y: number): GameDescripti
         }
     } else {
         // seg2
-        const nextDiag = BitBoard[diag][7 - y]
+        const nextDiag = BitBoard[diagR][7 - y]
         if (nextDiag) {
             octetCellsToCells(nextDiag)
                 .forEach((cell, i) => {
@@ -60,6 +70,33 @@ export function move(desc: GameDescription, x: number, y: number): GameDescripti
                     const iy = 7 - i
                     if (ix > 7) return
                     cells[8 * iy + ix] = cell as UiTypes.CellState
+                })
+        }
+    }
+    // diagL
+    const rx = 7 - x
+    const diagL = desc.diagsL[rx + y]
+    if (rx + y < 8) {
+        // seg1
+        const nextDiag = BitBoard[diagL][rx]
+        if (nextDiag) {
+            octetCellsToCells(nextDiag)
+                .forEach((cell, ix) => {
+                    const iy = (rx + y) - ix
+                    if (iy < 0) return
+                    cells[8 * iy + 7 - ix] = cell as UiTypes.CellState
+                })
+        }
+    } else {
+        // seg2
+        const nextDiag = BitBoard[diagL][7 - y]
+        if (nextDiag) {
+            octetCellsToCells(nextDiag)
+                .forEach((cell, i) => {
+                    const ix = (rx + y - 7) + i
+                    const iy = 7 - i
+                    if (ix > 7) return
+                    cells[8 * iy + 7 - ix] = cell as UiTypes.CellState
                 })
         }
     }
