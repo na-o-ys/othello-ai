@@ -124,7 +124,6 @@ export function showOctetCols(cols: OctetCells[]) {
 
 export function showOctetDiags(diags: OctetCells[]) {
     console.log("--- debug show octet diags")
-    // console.log(diags.map(diag => octetCellsToCells(diag).join("")).join("\n"))
     let rows: any = _.range(8).map(() => _.range(8))
     diags.map((diag, idxY) => {
         const cells = octetCellsToCells(diag)
