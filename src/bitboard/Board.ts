@@ -2,44 +2,43 @@ import * as _ from "lodash"
 import { GameState } from "ui/containers/Game"
 import * as UiTypes from "ui/types"
 
-// 自石: 00
-// 相手石: 01
-// 空: 10
-// 壁: 11
-export type OctetCells = number
+// black: 00
+// white: 01
+// empty: 10
+export type Row = number
 
-export interface GameDescription {
-    rows: OctetCells[]
-    cols: OctetCells[]
-    // 左下から右上
-    diagsR: OctetCells[]
-    // 右下から左上
-    diagsL: OctetCells[]
+export interface Board {
+    rows: Row[]
+    cols: Row[]
+    // left-bottom to right-top
+    diagsR: Row[]
+    // right-bottom to left-top
+    diagsL: Row[]
 }
 
-export function fromUiState({ turn, cells }: GameState): GameDescription {
+export function fromUiState({ turn, cells }: GameState): Board {
     const fpCells = turn == "b" ? cells : reverseColor(cells)
 
     const rows = _.chunk(fpCells, 8)
-        .map(row => genOctetCells(row))
+        .map(row => genRow(row))
     const cols = (_.zip.apply(null, _.chunk(fpCells, 8)) as Cell[][])
-        .map(col => genOctetCells(col))
+        .map(col => genRow(col))
     const diagsR = genDiagsR(fpCells)
-        .map(diag => genOctetCells(diag))
+        .map(diag => genRow(diag))
     const diagsL = genDiagsL(fpCells)
-        .map(diag => genOctetCells(diag))
+        .map(diag => genRow(diag))
 
     return { rows, cols, diagsR, diagsL }
 }
 
-export function toUiState(desc: GameDescription, turn: UiTypes.Color): UiTypes.CellState[] {
-    const cells = octetCellRowsToUiCells(desc.rows)
+export function toUiState(desc: Board, turn: UiTypes.Color): UiTypes.CellState[] {
+    const cells = rowsToUiCells(desc.rows)
     return turn == "b" ? cells : reverseColor(cells)
 }
 
 type Cell = "." | "b" | "w" | "-"
 
-export function genOctetCells(row: Cell[]): OctetCells {
+export function genRow(row: Cell[]): Row {
     return _.reduce(
         row,
         (octet, cell) => (octet << 2) + cellToByte(cell),
@@ -108,10 +107,10 @@ function genDiagsL(cells: Cell[]): Cell[][] {
     return _.concat(seg1, seg2)
 }
 
-function octetCellRowsToUiCells(rows: OctetCells[]): UiTypes.CellState[] {
+function rowsToUiCells(rows: Row[]): UiTypes.CellState[] {
     return _.flatten(
         rows.map(row =>
-            octetCellsToCells(row) as UiTypes.CellState[]
+            rowToCells(row) as UiTypes.CellState[]
         )
     )
 }
@@ -124,7 +123,7 @@ export function reverseColor(cells: UiTypes.CellState[]): UiTypes.CellState[] {
     })
 }
 
-export function octetCellsToCells(octetCells: OctetCells): Cell[] {
+export function rowToCells(octetCells: Row): Cell[] {
     return _.range(8).map(idx => {
         const byte = (octetCells >> (2 * (7 - idx))) & 3
         if (byte === 0) return "b"
@@ -134,16 +133,16 @@ export function octetCellsToCells(octetCells: OctetCells): Cell[] {
     })
 }
 
-export function reverse(desc: GameDescription): GameDescription {
-    const cells = octetCellRowsToUiCells(desc.rows)
+export function reverse(desc: Board): Board {
+    const cells = rowsToUiCells(desc.rows)
     const reversed = reverseColor(cells)
     return fromUiState({ turn: "b", cells: reversed })
 }
 
 // for debug
 
-export function showOctetCols(cols: OctetCells[]) {
-    const colCells = cols.map(octetCellsToCells)
+export function showOctetCols(cols: Row[]) {
+    const colCells = cols.map(rowToCells)
     const str = _.range(8).map(y =>
         _.range(8).map(x =>
             colCells[x][y]
@@ -153,11 +152,11 @@ export function showOctetCols(cols: OctetCells[]) {
     console.log(str)
 }
 
-export function showOctetDiags(diags: OctetCells[]) {
+export function showOctetDiags(diags: Row[]) {
     console.log("--- debug show octet diags")
     let rows: any = _.range(8).map(() => _.range(8))
     diags.map((diag, idxY) => {
-        const cells = octetCellsToCells(diag)
+        const cells = rowToCells(diag)
         if (idxY < 8) {
             _.range(8).forEach(x => {
                 const y = idxY - x

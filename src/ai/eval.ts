@@ -1,14 +1,14 @@
 import * as _ from "lodash"
-import { GameDescription, OctetCells, octetCellsToCells, reverseColor } from "bitboard/GameDescription"
+import { Board, Row, rowToCells, reverseColor } from "bitboard/Board"
 import * as Rule from "bitboard/rule"
 
-export function evaluate(desc: GameDescription): number {
+export function evaluate(desc: Board): number {
     const movables = Rule.movables(desc).length
     const line = lineScore(desc)
     return movables + line
 }
 
-function lineScore(desc: GameDescription): number {
+function lineScore(desc: Board): number {
     return [
         desc.rows[0],
         desc.rows[7],
@@ -32,9 +32,9 @@ const rowScores: { [key: string]: number } = {
     ".x.": -5
 }
 
-function rowScore(row: OctetCells): number {
+function rowScore(row: Row): number {
     // TODO: ビット演算
-    const bCells = octetCellsToCells(row)
+    const bCells = rowToCells(row)
         .map(c => c == "b" ? "x" : ".")
     const bEdges = [
         [bCells[2], bCells[1], bCells[0]].join(""),
@@ -42,7 +42,7 @@ function rowScore(row: OctetCells): number {
     ]
     const bScore = _.sum(bEdges.map(v => rowScores[v]))
 
-    const wCells = octetCellsToCells(row)
+    const wCells = rowToCells(row)
         .map(c => c == "w" ? "x" : ".")
     const wEdges = [
         [wCells[2], wCells[1], wCells[0]].join(""),

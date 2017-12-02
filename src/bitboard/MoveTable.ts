@@ -1,8 +1,8 @@
 import * as _ from "lodash"
-import { octetCellsToCells, genOctetCells, OctetCells } from "bitboard/GameDescription"
+import { rowToCells, genRow, Row } from "bitboard/Board"
 
-export const BitBoard: number[][] = _.range(1<<16).map(i => {
-    const currCells = octetCellsToCells(i)
+export const MoveTable: number[][] = _.range(1<<16).map(i => {
+    const currCells = rowToCells(i)
     return _.range(8).map(x => {
         if (currCells[x] !== ".") return -1
         const cells = _.clone(currCells)
@@ -31,6 +31,6 @@ export const BitBoard: number[][] = _.range(1<<16).map(i => {
         for (let j = lEnd; j <= rEnd; j++) {
             cells[j] = "b"
         }
-        return genOctetCells(cells)
+        return genRow(cells)
     })
 })

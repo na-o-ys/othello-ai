@@ -14,7 +14,7 @@ const middleWares: Middleware[] = [
 ].filter(Boolean)
 
 export function start(dom: HTMLElement | null) {
-    // bench()
+    bench()
     let store = createStore<GameState>(
         reducers,
         {

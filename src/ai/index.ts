@@ -1,11 +1,11 @@
 import * as _ from "lodash"
 import * as Rule from "bitboard/rule"
-import { GameDescription, reverse } from "bitboard/GameDescription"
+import { Board, reverse } from "bitboard/Board"
 import { evaluate } from "ai/eval"
 
 const minScore = -1000
 const maxScore = 1000
-export function run(desc: GameDescription, depth: number): any {
+export function run(desc: Board, depth: number): any {
     const movables = Rule.movables(desc)
     // return _.maxBy(movables, place => {
     //     const nextDesc = reverse(Rule.move(desc, place.x, place.y))
@@ -19,7 +19,7 @@ export function run(desc: GameDescription, depth: number): any {
     return _.sortBy(scores, s => s[0])
 }
 
-function alphaBeta(desc: GameDescription, depth: number, a: number, b: number): number {
+function alphaBeta(desc: Board, depth: number, a: number, b: number): number {
     if (depth <= 0) return evaluate(desc)
     const movables = Rule.movables(desc)
     if (movables.length == 0) return -alphaBeta(reverse(desc), depth - 1, -b, -a)

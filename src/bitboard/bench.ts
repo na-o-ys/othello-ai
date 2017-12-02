@@ -1,8 +1,8 @@
 import * as _ from "lodash"
-import { GameDescription, fromUiState } from "bitboard/GameDescription"
+import { Board, fromUiState } from "bitboard/Board"
 import * as Rule from "bitboard/rule"
 
-export function randomBoard(): GameDescription {
+export function randomBoard(): Board {
     const cells: any = Array(64).map(() => _.sample(["b", "w", "."]))
     return fromUiState({ turn: "b", cells })
 }

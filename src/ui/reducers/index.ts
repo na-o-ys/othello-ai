@@ -1,7 +1,7 @@
 import { GameState } from "ui/containers/Game"
 import { Action } from "ui/actions"
 import { Color, CellState, Place } from "ui/types"
-import { fromUiState, toUiState, showOctetCols, showOctetDiags, reverse } from "bitboard/GameDescription"
+import { fromUiState, toUiState, showOctetCols, showOctetDiags, reverse } from "bitboard/Board"
 import * as Rule from "bitboard/rule"
 import * as Ai from "ai"
 
