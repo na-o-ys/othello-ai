@@ -3,14 +3,20 @@ import * as Rule from "bitboard/rule"
 import { GameDescription, reverse } from "bitboard/GameDescription"
 import { evaluate } from "ai/eval"
 
-const minScore = 0
-const maxScore = 100
-export function run(desc: GameDescription, depth: number): { x: number, y: number } | undefined {
+const minScore = -1000
+const maxScore = 1000
+export function run(desc: GameDescription, depth: number): any {
     const movables = Rule.movables(desc)
-    return _.maxBy(movables, place => {
-        const nextDesc = reverse(Rule.move(desc, place.x, place.y))
-        return alphaBeta(reverse(nextDesc), depth, -maxScore, -minScore)
+    // return _.maxBy(movables, place => {
+    //     const nextDesc = reverse(Rule.move(desc, place.x, place.y))
+    //     return alphaBeta(nextDesc, depth, -maxScore, -minScore)
+    // })
+    const scores = movables.map(p => {
+        const nxt = reverse(Rule.move(desc, p.x, p.y))
+        const score = alphaBeta(nxt, depth, -maxScore, -minScore)
+        return [score, p]
     })
+    return _.sortBy(scores, s => s[0])
 }
 
 function alphaBeta(desc: GameDescription, depth: number, a: number, b: number): number {
