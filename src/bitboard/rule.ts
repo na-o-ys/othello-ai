@@ -1,5 +1,5 @@
 import * as _ from "lodash"
-import { Board, fromUiState, toUiState, rowToCells } from "bitboard/Board"
+import { Board, fromUiState, toUiState, rowToCells, flip } from "bitboard/Board"
 import { MoveTable } from "bitboard/MoveTable"
 import * as UiTypes from "ui/types"
 
@@ -11,103 +11,89 @@ export function movables(desc: Board): { x: number, y: number }[] {
 
 export function canMove(desc: Board, x: number, y: number): boolean {
     // row
-    if (MoveTable[desc.rows[y]][x] != -1) return true
+    if (MoveTable[desc.rows[y]][x] != 0) return true
     // col
-    if (MoveTable[desc.cols[x]][y] != -1) return true
+    if (MoveTable[desc.cols[x]][y] != 0) return true
     // diagR
     const diagR = desc.diagsR[x + y]
     if (x + y < 8) {
         // seg1
-        if (MoveTable[diagR][x] != -1) return true
+        if ((MoveTable[diagR][x]) != 0) return true
     } else {
         // seg2
-        if (MoveTable[diagR][7 - y] != -1) return true
+        if (MoveTable[diagR][7 - y] != 0) return true
     }
     // diagL
     const rx = 7 - x
     const diagL = desc.diagsL[rx + y]
     if (rx + y < 8) {
         // seg1
-        if (MoveTable[diagL][rx] != -1) return true
+        if (MoveTable[diagL][rx] != 0) return true
     } else {
         // seg2
-        if (MoveTable[diagL][7 - y] != -1) return true
+        if (MoveTable[diagL][7 - y] != 0) return true
     }
     return false
 }
 
 export function move(desc: Board, x: number, y: number): Board {
-    const cells = toUiState(desc, "b")
+    const next = _.cloneDeep(desc)
     // row
-    const nextRow = MoveTable[desc.rows[y]][x]
-    if (nextRow != -1) {
-        rowToCells(nextRow)
-            .forEach((cell, ix) => {
-                cells[8 * y + ix] = cell as UiTypes.CellState
-            })
-    }
+    const rowFlipped = MoveTable[desc.rows[y]][x]
+    _.range(8).forEach(i => {
+        if ((rowFlipped & (1 << (7 - i))) == 0) return
+        flip(next, i, y)
+    })
+
     // col
-    const nextCol = MoveTable[desc.cols[x]][y]
-    if (nextCol != -1) {
-        rowToCells(nextCol)
-            .forEach((cell, iy) => {
-                cells[8 * iy + x] = cell as UiTypes.CellState
-            })
-    }
+    const colFlipped = MoveTable[desc.cols[x]][y]
+    _.range(8).forEach(i => {
+        if ((colFlipped & (1 << (7 - i))) == 0) return
+        flip(next, x, i)
+    })
+
     // diagR
     const diagR = desc.diagsR[x + y]
     if (x + y < 8) {
         // seg1
-        const nextDiag = MoveTable[diagR][x]
-        if (nextDiag != -1) {
-            rowToCells(nextDiag)
-                .forEach((cell, ix) => {
-                    const iy = (x + y) - ix
-                    if (iy < 0) return
-                    cells[8 * iy + ix] = cell as UiTypes.CellState
-                })
-        }
+        const diagFlipped = MoveTable[diagR][x]
+        _.range(8).forEach(i => {
+            if ((diagFlipped & (1 << (7 - i))) == 0) return
+            const iy = (x + y) - i
+            flip(next, i, iy)
+        })
     } else {
         // seg2
-        const nextDiag = MoveTable[diagR][7 - y]
-        if (nextDiag != -1) {
-            rowToCells(nextDiag)
-                .forEach((cell, i) => {
-                    const ix = (x + y - 7) + i
-                    const iy = 7 - i
-                    if (ix > 7) return
-                    cells[8 * iy + ix] = cell as UiTypes.CellState
-                })
-        }
+        const diagFlipped = MoveTable[diagR][7 - y]
+        _.range(8).forEach(i => {
+            if ((diagFlipped & (1 << (7 - i))) == 0) return
+            const ix = (x + y - 7) + i
+            const iy = 7 - i
+            flip(next, ix, iy)
+        })
     }
+
     // diagL
     const rx = 7 - x
     const diagL = desc.diagsL[rx + y]
-    if (rx + y < 8) {
+    if (x + y < 8) {
         // seg1
-        const nextDiag = MoveTable[diagL][rx]
-        if (nextDiag != -1) {
-            rowToCells(nextDiag)
-                .forEach((cell, ix) => {
-                    const iy = (rx + y) - ix
-                    if (iy < 0) return
-                    cells[8 * iy + 7 - ix] = cell as UiTypes.CellState
-                })
-        }
+        const diagFlipped = MoveTable[diagL][rx]
+        _.range(8).forEach(i => {
+            if ((diagFlipped & (1 << (7 - i))) == 0) return
+            const iy = (rx + y) - i
+            flip(next, 7 - i, iy)
+        })
     } else {
         // seg2
-        const nextDiag = MoveTable[diagL][7 - y]
-        if (nextDiag != -1) {
-            rowToCells(nextDiag)
-                .forEach((cell, i) => {
-                    const ix = (rx + y - 7) + i
-                    const iy = 7 - i
-                    if (ix > 7) return
-                    cells[8 * iy + 7 - ix] = cell as UiTypes.CellState
-                })
-        }
+        const diagFlipped = MoveTable[diagL][7 - y]
+        _.range(8).forEach(i => {
+            if ((diagFlipped & (1 << (7 - i))) == 0) return
+            const ix = (rx + y - 7) + i
+            const iy = 7 - i
+            flip(next, 7 - ix, iy)
+        })
     }
 
-    // TODO: たぶんdescに変換する処理を飛ばせる
-    return fromUiState({ turn: "b", cells })
+    return next
 }

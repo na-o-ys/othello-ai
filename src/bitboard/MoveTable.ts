@@ -4,9 +4,7 @@ import { rowToCells, genRow, Row } from "bitboard/Board"
 export const MoveTable: number[][] = _.range(1<<16).map(i => {
     const currCells = rowToCells(i)
     return _.range(8).map(x => {
-        if (currCells[x] !== ".") return -1
-        const cells = _.clone(currCells)
-        // 左方向
+        if (currCells[x] !== ".") return 0
         let lEnd = x
         if (x - 1 >= 0 && currCells[x - 1] === "w") {
             for (let j = x - 2; j >= 0; j--) {
@@ -14,7 +12,7 @@ export const MoveTable: number[][] = _.range(1<<16).map(i => {
                     lEnd = j
                     break
                 }
-                if (currCells[j] === "." || currCells[j] === "-") break
+                if (currCells[j] === ".") break
             }
         }
         let rEnd = x
@@ -24,13 +22,14 @@ export const MoveTable: number[][] = _.range(1<<16).map(i => {
                     rEnd = j
                     break
                 }
-                if (currCells[j] === "." || currCells[j] === "-") break
+                if (currCells[j] === ".") break
             }
         }
-        if (lEnd == rEnd) return -1
+        if (lEnd == rEnd) return 0
+        let flipCells = 0
         for (let j = lEnd; j <= rEnd; j++) {
-            cells[j] = "b"
+            flipCells |= 1 << (7 - j)
         }
-        return genRow(cells)
+        return flipCells
     })
 })

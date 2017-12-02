@@ -25,7 +25,9 @@ export function fromUiState({ turn, cells }: GameState): Board {
         .map(col => genRow(col))
     const diagsR = genDiagsR(fpCells)
         .map(diag => genRow(diag))
-    const diagsL = genDiagsL(fpCells)
+    const diagsL = genDiagsR(
+        _.flatten(_.chunk(fpCells, 8).map(r => _.reverse(r)))
+    )
         .map(diag => genRow(diag))
 
     return { rows, cols, diagsR, diagsL }
@@ -36,7 +38,7 @@ export function toUiState(desc: Board, turn: UiTypes.Color): UiTypes.CellState[]
     return turn == "b" ? cells : reverseColor(cells)
 }
 
-type Cell = "." | "b" | "w" | "-"
+type Cell = "." | "b" | "w"
 
 export function genRow(row: Cell[]): Row {
     return _.reduce(
@@ -63,7 +65,7 @@ function genDiagsR(cells: Cell[]): Cell[][] {
     const seg1 = _.range(8).map(idx =>
         _.range(8).map(x => {
             const y = idx - x
-            if (y < 0) return "-"
+            if (y < 0) return "."
             return rows[y][x]
         })
     )
@@ -77,30 +79,8 @@ function genDiagsR(cells: Cell[]): Cell[][] {
         _.range(8).map(idxX => {
             const x = idxX + 1 + idxY
             const y = 7 - idxX
-            if (x > 7) return "-"
+            if (x > 7) return "."
             return rows[y][x]
-        })
-    )
-
-    return _.concat(seg1, seg2)
-}
-
-function genDiagsL(cells: Cell[]): Cell[][] {
-    const rows = _.chunk(cells, 8)
-    const seg1 = _.range(8).map(idx =>
-        _.range(8).map(x => {
-            const y = idx - x
-            if (y < 0) return "-"
-            return rows[y][7 - x]
-        })
-    )
-
-    const seg2 = _.range(8).map(idxY =>
-        _.range(8).map(idxX => {
-            const x = idxX + 1 + idxY
-            const y = 7 - idxX
-            if (x > 7) return "-"
-            return rows[y][7 - x]
         })
     )
 
@@ -128,8 +108,7 @@ export function rowToCells(octetCells: Row): Cell[] {
         const byte = (octetCells >> (2 * (7 - idx))) & 3
         if (byte === 0) return "b"
         if (byte === 1) return "w"
-        if (byte === 2) return "."
-        return "-"
+        return "."
     })
 }
 
@@ -137,6 +116,22 @@ export function reverse(desc: Board): Board {
     const cells = rowsToUiCells(desc.rows)
     const reversed = reverseColor(cells)
     return fromUiState({ turn: "b", cells: reversed })
+}
+
+export function flip(desc: Board, x: number, y: number) {
+    desc.rows[y] &= ~(0b11 << (2 * (7 - x)))
+    desc.cols[x] &= ~(0b11 << (2 * (7 - y)))
+    if (x + y < 8) {
+        desc.diagsR[x + y] &= ~(0b11 << (2 * (7 - x)))
+    } else {
+        desc.diagsR[x + y] &= ~(0b11 << (2 * y))
+    }
+    const rx = 7 - x
+    if (rx + y < 8) {
+        desc.diagsL[rx + y] &= ~(0b11 << (2 * (7 - rx)))
+    } else {
+        desc.diagsL[rx + y] &= ~(0b11 << (2 * y))
+    }
 }
 
 // for debug
