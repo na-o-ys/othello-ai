@@ -13,14 +13,15 @@ export interface Board {
     diagsR: Row[]
     // right-bottom to left-top
     diagsL: Row[]
+    stones: number
 }
 
-interface UiState {
+interface UiPosition {
     turn: UiTypes.Color,
     cells: UiTypes.CellState[]
 }
 
-export function fromUiState({ turn, cells }: UiState): Board {
+export function fromUiState({ turn, cells }: UiPosition): Board {
     const fpCells = turn == "b" ? cells : reverseColor(cells)
 
     const rows = _.chunk(fpCells, 8)
@@ -34,7 +35,9 @@ export function fromUiState({ turn, cells }: UiState): Board {
     )
         .map(diag => genRow(diag))
 
-    return { rows, cols, diagsR, diagsL }
+    const stones = fpCells.filter(c => c != ".").length
+
+    return { rows, cols, diagsR, diagsL, stones }
 }
 
 export function toUiState(desc: Board, turn: UiTypes.Color): UiTypes.CellState[] {
@@ -124,7 +127,8 @@ export function reverse(desc: Board): Board {
         rows: desc.rows.map(rev),
         cols: desc.cols.map(rev),
         diagsL: desc.diagsL.map(rev),
-        diagsR: desc.diagsR.map(rev)
+        diagsR: desc.diagsR.map(rev),
+        stones: desc.stones
     }
 }
 

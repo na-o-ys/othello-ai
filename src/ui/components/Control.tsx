@@ -4,18 +4,18 @@ import { Board, BoardProps, OnClickCell } from "ui/components/Board"
 import * as style from "ui/constants/style"
 
 export interface ControlProps {
-    onClickPass?: () => void,
+    onClickPass: () => void,
     onClickPrev: () => void,
     shouldPass: boolean
 }
 
 export const Control = (props: ControlProps) => (
     <div style={controlStyle()}>
-        <span onClick={props.onClickPrev}>Prev</span>
+        <span onClick={props.onClickPrev} style={{marginRight: 10}}>Prev</span>
         {
             props.shouldPass ?
                 <span onClick={props.onClickPass}>Pass</span> :
-                null
+                <span>Pass</span>
         }
     </div>
 )

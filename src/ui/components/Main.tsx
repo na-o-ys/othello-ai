@@ -1,11 +1,12 @@
 import * as React from "react"
-import { Place, CellState } from "ui/types"
+import { Place, CellState, Color } from "ui/types"
 import { Board, BoardProps, OnClickCell } from "ui/components/Board"
 import { Control } from "ui/components/Control"
 import * as style from "ui/constants/style"
 
 export interface MainProps {
     cells: CellState[],
+    turn: Color,
     onClickCell: OnClickCell,
     onClickPass: () => void,
     onClickPrev: () => void,

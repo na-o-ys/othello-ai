@@ -1,6 +1,6 @@
 import { Place } from "ui/types"
 
-export type Action = ClickCellAction
+export type Action = ClickCellAction | ClickPrevAction | ClickPassAction
 
 interface ClickCellAction {
     type: "click_cell"

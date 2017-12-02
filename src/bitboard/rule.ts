@@ -1,6 +1,6 @@
 import * as _ from "lodash"
 import { Board, fromUiState, toUiState, rowToCells, flip } from "bitboard/Board"
-import { MoveTable } from "bitboard/MoveTable"
+import { MoveTable, lookupMoveTable } from "bitboard/MoveTable"
 import * as UiTypes from "ui/types"
 
 export function movables(desc: Board): { x: number, y: number }[] {
@@ -13,29 +13,36 @@ export function movableIndices(desc: Board): number[] {
         .filter(i => canMove(desc, i % 8, (i / 8) >> 0))
 }
 
+function rowToTriplet(row: number): number {
+    const cells = _.range(8).map(i =>
+        (row >> ((7 - i) * 2)) & 0b11
+    )
+    return _.reduce(cells, (acc, c) => acc * 3 + c, 0)
+}
+
 export function canMove(desc: Board, x: number, y: number): boolean {
     // row
-    if (MoveTable[desc.rows[y]][x] != 0) return true
+    if (lookupMoveTable(desc.rows[y], x) != 0) return true
     // col
-    if (MoveTable[desc.cols[x]][y] != 0) return true
+    if (lookupMoveTable(desc.cols[x], y) != 0) return true
     // diagR
     const diagR = desc.diagsR[x + y]
     if (x + y < 8) {
         // seg1
-        if ((MoveTable[diagR][x]) != 0) return true
+        if (lookupMoveTable(diagR, x) != 0) return true
     } else {
         // seg2
-        if (MoveTable[diagR][7 - y] != 0) return true
+        if (lookupMoveTable(diagR, 7 - y) != 0) return true
     }
     // diagL
     const rx = 7 - x
     const diagL = desc.diagsL[rx + y]
     if (rx + y < 8) {
         // seg1
-        if (MoveTable[diagL][rx] != 0) return true
+        if (lookupMoveTable(diagL, rx) != 0) return true
     } else {
         // seg2
-        if (MoveTable[diagL][7 - y] != 0) return true
+        if (lookupMoveTable(diagL, 7 - y) != 0) return true
     }
     return false
 }
@@ -98,6 +105,7 @@ export function move(desc: Board, x: number, y: number): Board {
             flip(next, 7 - ix, iy)
         })
     }
+    next.stones += 1
 
     return next
 }

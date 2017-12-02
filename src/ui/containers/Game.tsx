@@ -4,17 +4,25 @@ import { Dispatch } from "redux"
 import * as actions from "ui/actions"
 import { Main, MainProps } from "ui/components/Main"
 import { Color, CellState, Place } from "ui/types"
+import * as Rule from "bitboard/rule"
+import { fromUiState } from "bitboard/Board"
 
 export interface GameState {
+    positions: Position[]
+}
+
+export interface Position {
     turn: Color,
-    cells: CellState[],
-    shouldPass: boolean
+    cells: CellState[]
 }
 
 function mapStateToProps(state: GameState, ownProps: any) {
+    const position = _.last(state.positions) as Position
+    const board = fromUiState(position)
     return {
-        cells: state.cells,
-        shouldPass: state.shouldPass
+        cells: position.cells,
+        turn: position.turn,
+        shouldPass: Rule.movables(board).length == 0
     }
 }
 
