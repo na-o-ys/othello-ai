@@ -28,7 +28,8 @@ export const Board = (props: BoardProps) => (
 
 const boardStyle = (scale: number = 1) => ({
     width: style.boardWidth,
-    height: style.boardWidth
+    height: style.boardWidth,
+    margin: style.boardMargin
 })
 
 export interface BoardRowProps {

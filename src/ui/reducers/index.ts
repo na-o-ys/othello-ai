@@ -24,7 +24,11 @@ export function reducers(state: GameState, action: Action): GameState  {
         console.log(aiMoves[0][1])
         console.log(aiMoves.map((m: any) => [m[0], [m[1].x, m[1].y].join()]))
         const next = reverse(Rule.move(reverse(moved), aiMoves[0][1].x, aiMoves[0][1].y))
-        return { turn: state.turn, cells: toUiState(next, state.turn)}
+        return {
+            turn: state.turn,
+            cells: toUiState(next, state.turn),
+            shouldPass: false
+        }
         // return {
         //     turn: state.turn == "b" ? "w" : "b",
         //     cells: toUiState(moved, state.turn)

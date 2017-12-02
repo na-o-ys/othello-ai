@@ -1,5 +1,4 @@
 import * as _ from "lodash"
-import { GameState } from "ui/containers/Game"
 import * as UiTypes from "ui/types"
 
 // black: 00
@@ -16,7 +15,12 @@ export interface Board {
     diagsL: Row[]
 }
 
-export function fromUiState({ turn, cells }: GameState): Board {
+interface UiState {
+    turn: UiTypes.Color,
+    cells: UiTypes.CellState[]
+}
+
+export function fromUiState({ turn, cells }: UiState): Board {
     const fpCells = turn == "b" ? cells : reverseColor(cells)
 
     const rows = _.chunk(fpCells, 8)

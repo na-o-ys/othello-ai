@@ -19,7 +19,8 @@ export function start(dom: HTMLElement | null) {
         reducers,
         {
             cells: initialBoard,
-            turn: "b"
+            turn: "b",
+            shouldPass: false
         },
         applyMiddleware(...middleWares)
     )
