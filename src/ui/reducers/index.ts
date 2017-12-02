@@ -20,7 +20,7 @@ export function reducers(state: GameState, action: Action): GameState  {
         if (!Rule.canMove(desc, action.place.x, action.place.y)) return state
 
         const moved = Rule.move(desc, action.place.x, action.place.y)
-        const aiMoves = Ai.run(reverse(moved), 5)
+        const aiMoves = Ai.run(reverse(moved), 6)
         console.log(aiMoves[0][1])
         console.log(aiMoves.map((m: any) => [m[0], [m[1].x, m[1].y].join()]))
         return {
