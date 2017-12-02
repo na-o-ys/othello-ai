@@ -116,7 +116,7 @@ function octetCellRowsToUiCells(rows: OctetCells[]): UiTypes.CellState[] {
     )
 }
 
-function reverseColor(cells: UiTypes.CellState[]): UiTypes.CellState[] {
+export function reverseColor(cells: UiTypes.CellState[]): UiTypes.CellState[] {
     return cells.map(c => {
         if (c == "b") return "w"
         if (c == "w") return "b"

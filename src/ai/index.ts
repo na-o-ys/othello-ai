@@ -20,8 +20,10 @@ export function run(desc: GameDescription, depth: number): any {
 }
 
 function alphaBeta(desc: GameDescription, depth: number, a: number, b: number): number {
-    if (depth == 0) return evaluate(desc)
-    for (const move of Rule.movables(desc)) {
+    if (depth <= 0) return evaluate(desc)
+    const movables = Rule.movables(desc)
+    if (movables.length == 0) return -alphaBeta(reverse(desc), depth - 1, -b, -a)
+    for (const move of movables) {
         const nextDesc = reverse(Rule.move(desc, move.x, move.y))
         a = _.max([a, -alphaBeta(nextDesc, depth - 1, -b , -a)]) as number
         if (a >= b) return a
