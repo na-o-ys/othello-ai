@@ -80,7 +80,7 @@ export function move(desc: Board, x: number, y: number): Board {
     // diagL
     const rx = 7 - x
     const diagL = desc.diagsL[rx + y]
-    if (x + y < 8) {
+    if (rx + y < 8) {
         // seg1
         const diagFlipped = MoveTable[diagL][rx]
         _.range(8).forEach(i => {

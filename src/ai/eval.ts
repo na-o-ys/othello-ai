@@ -5,7 +5,7 @@ import * as Rule from "bitboard/rule"
 export function evaluate(desc: Board.Board): number {
     const rev = Board.reverse(desc)
     const movablesScore = Rule.movableIndices(desc).length - Rule.movableIndices(rev).length
-    const lineScore = calcLineScore(desc) - calcLineScore(rev)
+    const lineScore = 0//calcLineScore(desc) - calcLineScore(rev)
     return movablesScore + lineScore
 }
 
