@@ -113,9 +113,15 @@ export function rowToCells(octetCells: Row): Cell[] {
 }
 
 export function reverse(desc: Board): Board {
-    const cells = rowsToUiCells(desc.rows)
-    const reversed = reverseColor(cells)
-    return fromUiState({ turn: "b", cells: reversed })
+    const ma = 0b1010101010101010
+    const mb = 0b0101010101010101
+    const rev = (r: Row) => r ^ mb ^ ((r & ma) >>> 1)
+    return {
+        rows: desc.rows.map(rev),
+        cols: desc.cols.map(rev),
+        diagsL: desc.diagsL.map(rev),
+        diagsR: desc.diagsR.map(rev)
+    }
 }
 
 export function flip(desc: Board, x: number, y: number) {

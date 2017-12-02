@@ -4,7 +4,7 @@ import * as Rule from "bitboard/rule"
 
 export function evaluate(desc: Board): number {
     const movables = Rule.movables(desc).length
-    const line = lineScore(desc)
+    const line = 0//lineScore(desc)
     return movables + line
 }
 

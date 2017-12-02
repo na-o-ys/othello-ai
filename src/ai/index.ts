@@ -13,7 +13,7 @@ export function run(desc: Board, depth: number): any {
     // })
     const scores = movables.map(p => {
         const nxt = reverse(Rule.move(desc, p.x, p.y))
-        const score = alphaBeta(nxt, depth, -maxScore, -minScore)
+        const score = alphaBeta(nxt, depth - 1, -maxScore, -minScore)
         return [score, p]
     })
     return _.sortBy(scores, s => s[0])

@@ -4,9 +4,13 @@ import { MoveTable } from "bitboard/MoveTable"
 import * as UiTypes from "ui/types"
 
 export function movables(desc: Board): { x: number, y: number }[] {
+    return movableIndices(desc)
+        .map(i => ({ x: i % 8, y: (i / 8) >> 0}))
+}
+
+export function movableIndices(desc: Board): number[] {
     return _.range(8 * 8)
         .filter(i => canMove(desc, i % 8, (i / 8) >> 0))
-        .map(i => ({ x: i % 8, y: (i / 8) >> 0}))
 }
 
 export function canMove(desc: Board, x: number, y: number): boolean {
