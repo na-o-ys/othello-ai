@@ -16,9 +16,48 @@ export interface Board {
     stones: number
 }
 
-interface UiPosition {
-    turn: UiTypes.Color,
-    cells: UiTypes.CellState[]
+export function reverse(desc: Board): Board {
+    const ma = 0b1010101010101010
+    const mb = 0b0101010101010101
+    const rev = (r: Row) => r ^ mb ^ ((r & ma) >>> 1)
+    return {
+        rows: desc.rows.map(rev),
+        cols: desc.cols.map(rev),
+        diagsL: desc.diagsL.map(rev),
+        diagsR: desc.diagsR.map(rev),
+        stones: desc.stones
+    }
+}
+
+export function flip(desc: Board, x: number, y: number) {
+    desc.rows[y] &= ~(0b11 << (2 * (7 - x)))
+    desc.cols[x] &= ~(0b11 << (2 * (7 - y)))
+    if (x + y < 8) {
+        desc.diagsR[x + y] &= ~(0b11 << (2 * (7 - x)))
+    } else {
+        desc.diagsR[x + y] &= ~(0b11 << (2 * y))
+    }
+    const rx = 7 - x
+    if (rx + y < 8) {
+        desc.diagsL[rx + y] &= ~(0b11 << (2 * (7 - rx)))
+    } else {
+        desc.diagsL[rx + y] &= ~(0b11 << (2 * y))
+    }
+}
+
+export function stones(board: Board): number[] {
+    return _.flatten(
+        board.rows.map(row =>
+            _.range(8)
+                .map(i => (row >> ((7 - i) * 2)) & 0b11)
+                .map(c => {
+                    if (c == 0b00) return [1, 0]
+                    if (c == 0b01) return [0, 1]
+                    return [0, 0]
+                })
+        )
+    )
+        .reduce((acc, crr) => [acc[0] + crr[0], acc[1] + crr[1]], [0, 0])
 }
 
 export function fromUiState(cells: UiTypes.CellState[]): Board {
@@ -38,13 +77,17 @@ export function fromUiState(cells: UiTypes.CellState[]): Board {
     return { rows, cols, diagsR, diagsL, stones }
 }
 
-export function toUiState(desc: Board): UiTypes.CellState[] {
-    return rowsToUiCells(desc.rows)
+export function toUiState(board: Board): UiTypes.CellState[] {
+    return _.flatten(
+        board.rows.map(row =>
+            rowToCells(row) as UiTypes.CellState[]
+        )
+    )
 }
 
 type Cell = "." | "b" | "w"
 
-export function genRow(row: Cell[]): Row {
+function genRow(row: Cell[]): Row {
     return _.reduce(
         row,
         (octet, cell) => (octet << 2) + cellToByte(cell),
@@ -91,107 +134,11 @@ function genDiagsR(cells: Cell[]): Cell[][] {
     return _.concat(seg1, seg2)
 }
 
-function rowsToUiCells(rows: Row[]): UiTypes.CellState[] {
-    return _.flatten(
-        rows.map(row =>
-            rowToCells(row) as UiTypes.CellState[]
-        )
-    )
-}
-
-export function reverseColor(cells: UiTypes.CellState[]): UiTypes.CellState[] {
-    return cells.map(c => {
-        if (c == "b") return "w"
-        if (c == "w") return "b"
-        return c
-    })
-}
-
-export function rowToCells(octetCells: Row): Cell[] {
+function rowToCells(octetCells: Row) {
     return _.range(8).map(idx => {
         const byte = (octetCells >> (2 * (7 - idx))) & 3
         if (byte === 0) return "b"
         if (byte === 1) return "w"
         return "."
     })
-}
-
-export function reverse(desc: Board): Board {
-    const ma = 0b1010101010101010
-    const mb = 0b0101010101010101
-    const rev = (r: Row) => r ^ mb ^ ((r & ma) >>> 1)
-    return {
-        rows: desc.rows.map(rev),
-        cols: desc.cols.map(rev),
-        diagsL: desc.diagsL.map(rev),
-        diagsR: desc.diagsR.map(rev),
-        stones: desc.stones
-    }
-}
-
-export function flip(desc: Board, x: number, y: number) {
-    desc.rows[y] &= ~(0b11 << (2 * (7 - x)))
-    desc.cols[x] &= ~(0b11 << (2 * (7 - y)))
-    if (x + y < 8) {
-        desc.diagsR[x + y] &= ~(0b11 << (2 * (7 - x)))
-    } else {
-        desc.diagsR[x + y] &= ~(0b11 << (2 * y))
-    }
-    const rx = 7 - x
-    if (rx + y < 8) {
-        desc.diagsL[rx + y] &= ~(0b11 << (2 * (7 - rx)))
-    } else {
-        desc.diagsL[rx + y] &= ~(0b11 << (2 * y))
-    }
-}
-
-export function stones(board: Board): number[] {
-    return _.flatten(
-        board.rows.map(row =>
-            _.range(8)
-                .map(i => (row >> ((7 - i) * 2)) & 0b11)
-                .map(c => {
-                    if (c == 0b00) return [1, 0]
-                    if (c == 0b01) return [0, 1]
-                    return [0, 0]
-                })
-        )
-    )
-        .reduce((acc, crr) => [acc[0] + crr[0], acc[1] + crr[1]], [0, 0])
-}
-
-// for debug
-
-export function showOctetCols(cols: Row[]) {
-    const colCells = cols.map(rowToCells)
-    const str = _.range(8).map(y =>
-        _.range(8).map(x =>
-            colCells[x][y]
-        ).join("")
-    ).join("\n")
-    console.log("--- debug show octet cols")
-    console.log(str)
-}
-
-export function showOctetDiags(diags: Row[]) {
-    console.log("--- debug show octet diags")
-    let rows: any = _.range(8).map(() => _.range(8))
-    diags.map((diag, idxY) => {
-        const cells = rowToCells(diag)
-        if (idxY < 8) {
-            _.range(8).forEach(x => {
-                const y = idxY - x
-                if (y < 0) return
-                rows[y][x] = cells[x]
-            })
-        } else {
-            _.range(8).forEach(idxX => {
-                const x = (idxY - 7) + idxX
-                const y = 7 - idxX
-                if (x > 7) return
-                rows[y][x] = cells[idxX]
-            })
-        }
-    })
-    console.log(rows.map((row: any) => row.join("")).join("\n"))
 }

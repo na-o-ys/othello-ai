@@ -17177,87 +17177,6 @@ if (true) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const _ = __webpack_require__(0);
-function fromUiState(cells) {
-    const rows = _.chunk(cells, 8)
-        .map(row => genRow(row));
-    const cols = _.zip.apply(null, _.chunk(cells, 8))
-        .map(col => genRow(col));
-    const diagsR = genDiagsR(cells)
-        .map(diag => genRow(diag));
-    const diagsL = genDiagsR(_.flatten(_.chunk(cells, 8).map(r => _.reverse(r))))
-        .map(diag => genRow(diag));
-    const stones = cells.filter(c => c != ".").length;
-    return { rows, cols, diagsR, diagsL, stones };
-}
-exports.fromUiState = fromUiState;
-function toUiState(desc) {
-    return rowsToUiCells(desc.rows);
-}
-exports.toUiState = toUiState;
-function genRow(row) {
-    return _.reduce(row, (octet, cell) => (octet << 2) + cellToByte(cell), 0);
-}
-exports.genRow = genRow;
-function cellToByte(cell) {
-    if (cell === "b")
-        return 0;
-    if (cell === "w")
-        return 1;
-    if (cell === ".")
-        return 2;
-    return 3;
-}
-function genDiagsR(cells) {
-    const rows = _.chunk(cells, 8);
-    // (0, 0), (1, -1), (2, -2), ...
-    // (0, 1), (1, 0),  (2, -1), ...
-    // (0, 2), (1, 1),  (2, 0),  ...
-    // ...
-    // (0, 7), (1, 6), ...
-    const seg1 = _.range(8).map(idx => _.range(8).map(x => {
-        const y = idx - x;
-        if (y < 0)
-            return ".";
-        return rows[y][x];
-    }));
-    // (1, 7), (2, 6), ...
-    // (2, 7), (3, 6), ...
-    // (3, 7), (4, 6), ...
-    // ...
-    // (7, 7), *(8, 6), ...
-    const seg2 = _.range(8).map(idxY => _.range(8).map(idxX => {
-        const x = idxX + 1 + idxY;
-        const y = 7 - idxX;
-        if (x > 7)
-            return ".";
-        return rows[y][x];
-    }));
-    return _.concat(seg1, seg2);
-}
-function rowsToUiCells(rows) {
-    return _.flatten(rows.map(row => rowToCells(row)));
-}
-function reverseColor(cells) {
-    return cells.map(c => {
-        if (c == "b")
-            return "w";
-        if (c == "w")
-            return "b";
-        return c;
-    });
-}
-exports.reverseColor = reverseColor;
-function rowToCells(octetCells) {
-    return _.range(8).map(idx => {
-        const byte = (octetCells >> (2 * (7 - idx))) & 3;
-        if (byte === 0)
-            return "b";
-        if (byte === 1)
-            return "w";
-        return ".";
-    });
-}
-exports.rowToCells = rowToCells;
 function reverse(desc) {
     const ma = 0b1010101010101010;
     const mb = 0b0101010101010101;
@@ -17302,40 +17221,72 @@ function stones(board) {
         .reduce((acc, crr) => [acc[0] + crr[0], acc[1] + crr[1]], [0, 0]);
 }
 exports.stones = stones;
-// for debug
-function showOctetCols(cols) {
-    const colCells = cols.map(rowToCells);
-    const str = _.range(8).map(y => _.range(8).map(x => colCells[x][y]).join("")).join("\n");
-    console.log("--- debug show octet cols");
-    console.log(str);
+function fromUiState(cells) {
+    const rows = _.chunk(cells, 8)
+        .map(row => genRow(row));
+    const cols = _.zip.apply(null, _.chunk(cells, 8))
+        .map(col => genRow(col));
+    const diagsR = genDiagsR(cells)
+        .map(diag => genRow(diag));
+    const diagsL = genDiagsR(_.flatten(_.chunk(cells, 8).map(r => _.reverse(r))))
+        .map(diag => genRow(diag));
+    const stones = cells.filter(c => c != ".").length;
+    return { rows, cols, diagsR, diagsL, stones };
 }
-exports.showOctetCols = showOctetCols;
-function showOctetDiags(diags) {
-    console.log("--- debug show octet diags");
-    let rows = _.range(8).map(() => _.range(8));
-    diags.map((diag, idxY) => {
-        const cells = rowToCells(diag);
-        if (idxY < 8) {
-            _.range(8).forEach(x => {
-                const y = idxY - x;
-                if (y < 0)
-                    return;
-                rows[y][x] = cells[x];
-            });
-        }
-        else {
-            _.range(8).forEach(idxX => {
-                const x = (idxY - 7) + idxX;
-                const y = 7 - idxX;
-                if (x > 7)
-                    return;
-                rows[y][x] = cells[idxX];
-            });
-        }
+exports.fromUiState = fromUiState;
+function toUiState(board) {
+    return _.flatten(board.rows.map(row => rowToCells(row)));
+}
+exports.toUiState = toUiState;
+function genRow(row) {
+    return _.reduce(row, (octet, cell) => (octet << 2) + cellToByte(cell), 0);
+}
+function cellToByte(cell) {
+    if (cell === "b")
+        return 0;
+    if (cell === "w")
+        return 1;
+    if (cell === ".")
+        return 2;
+    return 3;
+}
+function genDiagsR(cells) {
+    const rows = _.chunk(cells, 8);
+    // (0, 0), (1, -1), (2, -2), ...
+    // (0, 1), (1, 0),  (2, -1), ...
+    // (0, 2), (1, 1),  (2, 0),  ...
+    // ...
+    // (0, 7), (1, 6), ...
+    const seg1 = _.range(8).map(idx => _.range(8).map(x => {
+        const y = idx - x;
+        if (y < 0)
+            return ".";
+        return rows[y][x];
+    }));
+    // (1, 7), (2, 6), ...
+    // (2, 7), (3, 6), ...
+    // (3, 7), (4, 6), ...
+    // ...
+    // (7, 7), *(8, 6), ...
+    const seg2 = _.range(8).map(idxY => _.range(8).map(idxX => {
+        const x = idxX + 1 + idxY;
+        const y = 7 - idxX;
+        if (x > 7)
+            return ".";
+        return rows[y][x];
+    }));
+    return _.concat(seg1, seg2);
+}
+function rowToCells(octetCells) {
+    return _.range(8).map(idx => {
+        const byte = (octetCells >> (2 * (7 - idx))) & 3;
+        if (byte === 0)
+            return "b";
+        if (byte === 1)
+            return "w";
+        return ".";
     });
-    console.log(rows.map((row) => row.join("")).join("\n"));
 }
-exports.showOctetDiags = showOctetDiags;
 
 
 /***/ }),
@@ -17414,7 +17365,7 @@ module.exports = g;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cellWidth = 30;
+exports.cellWidth = 40;
 exports.cellMargin = 1;
 exports.boardWidth = (exports.cellWidth + exports.cellMargin * 2) * 8;
 exports.boardMargin = 10;
@@ -18681,7 +18632,6 @@ const middleWares = [
     "production" !== "production" && redux_logger_1.createLogger()
 ].filter(Boolean);
 function start(dom) {
-    // bench()
     let store = redux_1.createStore(reducers_1.reducers, {
         positions: [{
                 cells: Constants.initialBoard,
@@ -20784,7 +20734,7 @@ const _ = __webpack_require__(0);
 const react_redux_1 = __webpack_require__(17);
 const actions = __webpack_require__(66);
 const Main_1 = __webpack_require__(67);
-const Rule = __webpack_require__(6);
+const Move = __webpack_require__(6);
 const Board = __webpack_require__(2);
 function mapStateToProps(state, ownProps) {
     const position = _.last(state.positions);
@@ -20795,8 +20745,8 @@ function mapStateToProps(state, ownProps) {
         Board.stones(board) :
         Board.stones(board).reverse();
     let status = "normal";
-    if (Rule.movables(board).length == 0) {
-        if (Rule.movables(Board.reverse(board)).length == 0) {
+    if (Move.movables(board).length == 0) {
+        if (Move.movables(Board.reverse(board)).length == 0) {
             status = "finished";
         }
         else {
@@ -20875,7 +20825,8 @@ class Main extends React.Component {
 exports.Main = Main;
 const mainStyle = (scale = 1) => ({
     width: style.mainWidth,
-    height: style.mainHeight
+    height: style.mainHeight,
+    margin: "auto"
 });
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(68)))
@@ -21159,13 +21110,12 @@ const controlStyle = (scale = 1) => ({
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const _ = __webpack_require__(0);
-const Board_1 = __webpack_require__(2);
 function lookupMoveTable(row, x) {
     return exports.MoveTable[row][x];
 }
 exports.lookupMoveTable = lookupMoveTable;
 exports.MoveTable = _.range(1 << 16).map(i => {
-    const currCells = Board_1.rowToCells(i);
+    const currCells = rowToCells(i);
     return _.range(8).map(x => {
         if (currCells[x] !== ".")
             return 0;
@@ -21200,6 +21150,17 @@ exports.MoveTable = _.range(1 << 16).map(i => {
         return flipCells;
     });
 });
+function rowToCells(row) {
+    return _.range(8).map(idx => {
+        const byte = (row >> (2 * (7 - idx))) & 3;
+        if (byte === 0)
+            return "b";
+        if (byte === 1)
+            return "w";
+        return ".";
+    });
+}
+exports.rowToCells = rowToCells;
 // debug
 function naiveLookup(row, x) {
     if (((row >> ((7 - x) * 2)) & 0b11) != 0b10)
@@ -21246,7 +21207,7 @@ exports.naiveLookup = naiveLookup;
 Object.defineProperty(exports, "__esModule", { value: true });
 const _ = __webpack_require__(0);
 const Board_1 = __webpack_require__(2);
-const Rule = __webpack_require__(6);
+const Move = __webpack_require__(6);
 const Ai = __webpack_require__(74);
 function turn(state, action) {
     return state == "b" ? "w" : "b";
@@ -21265,11 +21226,11 @@ function move(state, place) {
                     cells: latest.cells,
                     turn: nextTurn
                 }]) });
-    if (!Rule.canMove(board, place.x, place.y))
+    if (!Move.canMove(board, place.x, place.y))
         return state;
     const nextBoard = latest.turn == "b" ?
-        Rule.move(board, place.x, place.y) :
-        Board_1.reverse(Rule.move(board, place.x, place.y));
+        Move.move(board, place.x, place.y) :
+        Board_1.reverse(Move.move(board, place.x, place.y));
     return Object.assign({}, state, { latestMove: place, positions: _.concat(state.positions, [{
                 cells: Board_1.toUiState(nextBoard),
                 turn: nextTurn
@@ -21316,7 +21277,7 @@ exports.reducers = reducers;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const _ = __webpack_require__(0);
-const Rule = __webpack_require__(6);
+const Move = __webpack_require__(6);
 const Board_1 = __webpack_require__(2);
 const eval_1 = __webpack_require__(75);
 const FullSearchCount = 12;
@@ -21331,13 +21292,13 @@ function run(board) {
 exports.run = run;
 function iterativeDeepning(board) {
     console.log("iterative deepning");
-    const movables = Rule.movables(board);
+    const movables = Move.movables(board);
     const timelimit = Date.now() + TimeoutMS;
     let scores = [];
     for (let depth = 3;; depth++) {
         try {
             scores = movables.map(place => ({
-                score: -alphaBetaEval(Board_1.reverse(Rule.move(board, place.x, place.y)), depth - 1, -MaxScore, -MinScore, timelimit),
+                score: -alphaBetaEval(Board_1.reverse(Move.move(board, place.x, place.y)), depth - 1, -MaxScore, -MinScore, timelimit),
                 place
             }));
         }
@@ -21353,12 +21314,12 @@ function alphaBetaEval(board, depth, a, b, tl) {
         throw "tle";
     if (depth <= 0)
         return eval_1.evaluate(board);
-    const movables = Rule.movables(board);
+    const movables = Move.movables(board);
     if (movables.length == 0)
         return -alphaBetaEval(Board_1.reverse(board), depth - 1, -b, -a, tl);
     for (const move of movables) {
-        const nextDesc = Board_1.reverse(Rule.move(board, move.x, move.y));
-        a = _.max([a, -alphaBetaEval(nextDesc, depth - 1, -b, -a, tl)]);
+        const next = Board_1.reverse(Move.move(board, move.x, move.y));
+        a = _.max([a, -alphaBetaEval(next, depth - 1, -b, -a, tl)]);
         if (a >= b)
             return a;
     }
@@ -21366,9 +21327,9 @@ function alphaBetaEval(board, depth, a, b, tl) {
 }
 function fullSearch(board) {
     console.log("full search");
-    const movables = Rule.movables(board);
+    const movables = Move.movables(board);
     const scores = movables.map(place => ({
-        score: -alphaBetaFull(Board_1.reverse(Rule.move(board, place.x, place.y)), 0, -MaxScore, -MinScore),
+        score: -alphaBetaFull(Board_1.reverse(Move.move(board, place.x, place.y)), 0, -MaxScore, -MinScore),
         place
     }));
     return _.sortBy(scores, s => -s.score);
@@ -21377,13 +21338,13 @@ function alphaBetaFull(board, passes, a, b) {
     const [black, white] = Board_1.stones(board);
     if (board.stones == 64)
         return black - white;
-    const movables = Rule.movables(board);
+    const movables = Move.movables(board);
     if (movables.length == 0 && passes > 0)
         return black - white;
     if (movables.length == 0)
         return -alphaBetaFull(Board_1.reverse(board), passes + 1, -b, -a);
     for (const move of movables) {
-        const nextDesc = Board_1.reverse(Rule.move(board, move.x, move.y));
+        const nextDesc = Board_1.reverse(Move.move(board, move.x, move.y));
         a = _.max([a, -alphaBetaFull(nextDesc, passes, -b, -a)]);
         if (a >= b)
             return a;
@@ -21400,28 +21361,28 @@ function alphaBetaFull(board, passes, a, b) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const Board = __webpack_require__(2);
-const Rule = __webpack_require__(6);
+const Move = __webpack_require__(6);
 const k = 3;
-function evaluate(desc) {
-    const rev = Board.reverse(desc);
-    const movablesScore = 100 * (Rule.movableIndices(desc).length - Rule.movableIndices(rev).length);
-    const lineScore = k * (calcLineScore(desc) - calcLineScore(rev));
+function evaluate(board) {
+    const rev = Board.reverse(board);
+    const movablesScore = 100 * (Move.movableIndices(board).length - Move.movableIndices(rev).length);
+    const lineScore = k * (calcLineScore(board) - calcLineScore(rev));
     return movablesScore + lineScore;
 }
 exports.evaluate = evaluate;
-function calcLineScore(desc) {
+function calcLineScore(board) {
     return [
-        desc.rows[0],
-        desc.rows[7],
-        desc.cols[0],
-        desc.cols[7],
-        desc.diagsL[7],
-        desc.diagsR[7]
+        board.rows[0],
+        board.rows[7],
+        board.cols[0],
+        board.cols[7],
+        board.diagsL[7],
+        board.diagsR[7]
     ]
         .map(rowScore)
         .reduce((acc, crr) => acc + crr, 0);
 }
-const rowScores = [
+const LineScores = [
     ["xxx", 100],
     [".xx", 100],
     ["..x", 100],
@@ -21452,7 +21413,7 @@ function rowScore(row) {
     right <<= 1;
     if ((row & 0b11) == 0)
         right += 1;
-    return rowScores[left] + rowScores[right];
+    return LineScores[left] + LineScores[right];
 }
 
 
@@ -21543,6 +21504,16 @@ wwbwbwb.
 wwwbb...
 ..wbb...
 ..w.....
+`);
+exports.expr = toState(`
+www..ww.
+ww......
+w.w.....
+........
+........
+w.w..w.w
+ww....ww
+www..www
 `);
 function toState(str) {
     return _.flatten(str.split("\n").slice(1, 9).map(r => r.split("")));

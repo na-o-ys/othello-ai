@@ -53,12 +53,13 @@ export class Main extends React.Component<MainProps, {}> {
                     black={this.props.black}
                     white={this.props.white}
                 />
-            </div>            
+            </div>
         )
     }
 }
 
 const mainStyle = (scale: number = 1) => ({
     width: style.mainWidth,
-    height: style.mainHeight
+    height: style.mainHeight,
+    margin: "auto"
 })

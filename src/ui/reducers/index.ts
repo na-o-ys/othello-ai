@@ -2,8 +2,8 @@ import * as _ from "lodash"
 import { GameState, Position } from "ui/containers/Game"
 import { Action } from "ui/actions"
 import { Color, CellState, Place } from "ui/types"
-import { fromUiState, toUiState, showOctetCols, showOctetDiags, reverse } from "bitboard/Board"
-import * as Rule from "bitboard/rule"
+import { fromUiState, toUiState, reverse } from "bitboard/Board"
+import * as Move from "bitboard/move"
 import * as Ai from "ai"
 
 function turn(state: Color, action: Action): Color {
@@ -32,11 +32,11 @@ function move(state: GameState, place?: Place): GameState {
         )
     }
 
-    if (!Rule.canMove(board, place.x, place.y)) return state
+    if (!Move.canMove(board, place.x, place.y)) return state
 
     const nextBoard = latest.turn == "b" ?
-        Rule.move(board, place.x, place.y) :
-        reverse(Rule.move(board, place.x, place.y))
+        Move.move(board, place.x, place.y) :
+        reverse(Move.move(board, place.x, place.y))
 
     return {
         ...state,
