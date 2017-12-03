@@ -2,10 +2,12 @@ import * as _ from "lodash"
 import * as Board from "bitboard/Board"
 import * as Rule from "bitboard/rule"
 
+const k = 1
+
 export function evaluate(desc: Board.Board): number {
     const rev = Board.reverse(desc)
-    const movablesScore = Rule.movableIndices(desc).length - Rule.movableIndices(rev).length
-    const lineScore = 0//calcLineScore(desc) - calcLineScore(rev)
+    const movablesScore = 100 * (Rule.movableIndices(desc).length - Rule.movableIndices(rev).length)
+    const lineScore = k * (calcLineScore(desc) - calcLineScore(rev))
     return movablesScore + lineScore
 }
 
@@ -23,14 +25,14 @@ function calcLineScore(desc: Board.Board): number {
 }
 
 const rowScores = [
-    ["xxx", 10],
-    [".xx", 10],
-    ["..x", 10],
-    ["x.x", 10],
-    ["x..", 5],
+    ["xxx", 100],
+    [".xx", 100],
+    ["..x", 100],
+    ["x.x", 100],
+    ["x..", 50],
     ["...", 0],
-    ["xx.", -10],
-    [".x.", -10]
+    ["xx.", -100],
+    [".x.", -100]
 ]
     .sort((a, b) => a[0] > b[0] ? 1 : -1)
     .map(e => e[1] as number)

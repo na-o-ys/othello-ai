@@ -42,9 +42,10 @@ function alphaBeta(board: Board, depth: number, a: number, b: number): number {
 }
 
 function fullSearch(board: Board, passes: number, a: number, b: number): number {
-    if (board.stones == 64) return stones(board)[0]
+    const [black, white] = stones(board)
+    if (board.stones == 64) return black - white
     const movables = Rule.movables(board)
-    if (movables.length == 0 && passes > 0) return stones(board)[0]
+    if (movables.length == 0 && passes > 0) return black - white
     if (movables.length == 0) return -fullSearch(reverse(board), passes + 1, -b, -a)
     for (const move of movables) {
         const nextDesc = reverse(Rule.move(board, move.x, move.y))

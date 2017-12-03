@@ -55,3 +55,18 @@ bwwbwbwb
 bwwwwbwb
 bbbbbbbb
 `.split("\n").slice(1, 9).map(r => r.split("") as CellState[]))
+
+export const check1: CellState[] = toState(`
+........
+........
+bbbbbbbw
+.bwwwbww
+.bbbbwbw
+.bbbwwww
+..bwwb.w
+..bbbb..
+`)
+
+function toState(str: string) {
+    return _.flatten(str.split("\n").slice(1, 9).map(r => r.split("") as CellState[]))
+}
