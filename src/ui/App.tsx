@@ -18,8 +18,11 @@ export function start(dom: HTMLElement | null) {
     let store = createStore<GameState>(
         reducers,
         {
-            cells: initialBoard,
-            turn: "b"
+            positions: [{
+                cells: initialBoard,
+                turn: "b"
+            }],
+            playerColor: "b"
         },
         applyMiddleware(...middleWares)
     )

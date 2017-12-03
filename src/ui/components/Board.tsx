@@ -6,6 +6,7 @@ import * as style from "ui/constants/style"
 
 export interface BoardProps {
     cells: CellState[],
+    highlight?: Place,
     onClickCell: OnClickCell
 }
 
@@ -21,6 +22,9 @@ export const Board = (props: BoardProps) => (
             rowIdx={rowIdx}
             cells={props.cells.slice(rowIdx * 8, (rowIdx + 1) * 8)}
             onClickCell={props.onClickCell}
+            highlight={(props.highlight && props.highlight.y == rowIdx) ?
+                props.highlight.x :
+                undefined}
         />
     ))}
     </div>
@@ -28,13 +32,15 @@ export const Board = (props: BoardProps) => (
 
 const boardStyle = (scale: number = 1) => ({
     width: style.boardWidth,
-    height: style.boardWidth
+    height: style.boardWidth,
+    margin: style.boardMargin
 })
 
 export interface BoardRowProps {
     rowIdx: number,
     cells: CellState[],
-    onClickCell: OnClickCell
+    onClickCell: OnClickCell,
+    highlight?: number
 }
 
 export const BoardRow = (props: BoardRowProps) => (
@@ -45,6 +51,7 @@ export const BoardRow = (props: BoardRowProps) => (
             place={{ x: colIdx, y: props.rowIdx }}
             state={props.cells[colIdx]}
             onClick={() => props.onClickCell({ x: colIdx, y: props.rowIdx })}
+            highlight={props.highlight ? props.highlight == colIdx : false}
         />
     ))}
     </div>

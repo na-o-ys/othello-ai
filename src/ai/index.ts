@@ -5,7 +5,7 @@ import { evaluate } from "ai/eval"
 
 const minScore = -1000
 const maxScore = 1000
-export function run(desc: Board, depth: number): any {
+export function run(desc: Board, depth: number) {
     const movables = Rule.movables(desc)
     // return _.maxBy(movables, place => {
     //     const nextDesc = reverse(Rule.move(desc, place.x, place.y))
@@ -17,6 +17,7 @@ export function run(desc: Board, depth: number): any {
         return [score, p]
     })
     return _.sortBy(scores, s => -s[0])
+        .map(m => ({ score: m[0], place: m[1] }) as { score: number, place: { x: number, y: number }})
 }
 
 function alphaBeta(desc: Board, depth: number, a: number, b: number): number {

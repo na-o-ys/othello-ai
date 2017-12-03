@@ -1,5 +1,4 @@
 import * as _ from "lodash"
-import { GameState } from "ui/containers/Game"
 import * as UiTypes from "ui/types"
 
 // black: 00
@@ -14,9 +13,15 @@ export interface Board {
     diagsR: Row[]
     // right-bottom to left-top
     diagsL: Row[]
+    stones: number
 }
 
-export function fromUiState({ turn, cells }: GameState): Board {
+interface UiPosition {
+    turn: UiTypes.Color,
+    cells: UiTypes.CellState[]
+}
+
+export function fromUiState({ turn, cells }: UiPosition): Board {
     const fpCells = turn == "b" ? cells : reverseColor(cells)
 
     const rows = _.chunk(fpCells, 8)
@@ -30,12 +35,13 @@ export function fromUiState({ turn, cells }: GameState): Board {
     )
         .map(diag => genRow(diag))
 
-    return { rows, cols, diagsR, diagsL }
+    const stones = fpCells.filter(c => c != ".").length
+
+    return { rows, cols, diagsR, diagsL, stones }
 }
 
-export function toUiState(desc: Board, turn: UiTypes.Color): UiTypes.CellState[] {
-    const cells = rowsToUiCells(desc.rows)
-    return turn == "b" ? cells : reverseColor(cells)
+export function toUiState(desc: Board): UiTypes.CellState[] {
+    return rowsToUiCells(desc.rows)
 }
 
 type Cell = "." | "b" | "w"
@@ -120,7 +126,8 @@ export function reverse(desc: Board): Board {
         rows: desc.rows.map(rev),
         cols: desc.cols.map(rev),
         diagsL: desc.diagsL.map(rev),
-        diagsR: desc.diagsR.map(rev)
+        diagsR: desc.diagsR.map(rev),
+        stones: desc.stones
     }
 }
 
@@ -138,6 +145,21 @@ export function flip(desc: Board, x: number, y: number) {
     } else {
         desc.diagsL[rx + y] &= ~(0b11 << (2 * y))
     }
+}
+
+export function stones(desc: Board): number[] {
+    return _.flatten(
+        desc.rows.map(row =>
+            _.range(8)
+                .map(i => (row >> ((7 - i) * 2)) & 0b11)
+                .map(c => {
+                    if (c == 0b00) return [1, 0]
+                    if (c == 0b01) return [0, 1]
+                    return [0, 0]
+                })
+        )
+    )
+        .reduce((acc, crr) => [acc[0] + crr[0], acc[1] + crr[1]], [0, 0])
 }
 
 // for debug
