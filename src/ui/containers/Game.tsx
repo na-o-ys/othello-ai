@@ -5,7 +5,7 @@ import * as actions from "ui/actions"
 import { Main, MainProps } from "ui/components/Main"
 import { Color, CellState, Place } from "ui/types"
 import * as Rule from "bitboard/rule"
-import { fromUiState } from "bitboard/Board"
+import * as Board from "bitboard/Board"
 
 export interface GameState {
     positions: Position[]
@@ -18,11 +18,14 @@ export interface Position {
 
 function mapStateToProps(state: GameState, ownProps: any) {
     const position = _.last(state.positions) as Position
-    const board = fromUiState(position)
+    const board = Board.fromUiState(position)
+    const [black, white] = Board.stones(board)
     return {
         cells: position.cells,
         turn: position.turn,
-        shouldPass: Rule.movables(board).length == 0
+        shouldPass: Rule.movables(board).length == 0,
+        black,
+        white
     }
 }
 

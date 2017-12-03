@@ -6,17 +6,24 @@ import * as style from "ui/constants/style"
 export interface ControlProps {
     onClickPass: () => void,
     onClickPrev: () => void,
-    shouldPass: boolean
+    shouldPass: boolean,
+    black: number,
+    white: number
 }
 
 export const Control = (props: ControlProps) => (
     <div style={controlStyle()}>
-        <span onClick={props.onClickPrev} style={{marginRight: 10}}>Prev</span>
-        {
-            props.shouldPass ?
-                <span onClick={props.onClickPass}>Pass</span> :
-                <span>Pass</span>
-        }
+        <div>
+            {props.black} - {props.white}
+        </div>
+        <div>
+            <span onClick={props.onClickPrev} style={{marginRight: 10}}>Prev</span>
+            {
+                props.shouldPass ?
+                    <span onClick={props.onClickPass}>Pass</span> :
+                    <span>Pass</span>
+            }
+        </div>
     </div>
 )
 

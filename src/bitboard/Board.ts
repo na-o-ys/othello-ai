@@ -148,6 +148,21 @@ export function flip(desc: Board, x: number, y: number) {
     }
 }
 
+export function stones(desc: Board): number[] {
+    return _.flatten(
+        desc.rows.map(row =>
+            _.range(8)
+                .map(i => (row >> ((7 - i) * 2)) & 0b11)
+                .map(c => {
+                    if (c == 0b00) return [1, 0]
+                    if (c == 0b01) return [0, 1]
+                    return [0, 0]
+                })
+        )
+    )
+        .reduce((acc, crr) => [acc[0] + crr[0], acc[1] + crr[1]], [0, 0])
+}
+
 // for debug
 
 export function showOctetCols(cols: Row[]) {
