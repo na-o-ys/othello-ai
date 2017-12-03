@@ -21,21 +21,19 @@ interface UiPosition {
     cells: UiTypes.CellState[]
 }
 
-export function fromUiState({ turn, cells }: UiPosition): Board {
-    const fpCells = turn == "b" ? cells : reverseColor(cells)
-
-    const rows = _.chunk(fpCells, 8)
+export function fromUiState(cells: UiTypes.CellState[]): Board {
+    const rows = _.chunk(cells, 8)
         .map(row => genRow(row))
-    const cols = (_.zip.apply(null, _.chunk(fpCells, 8)) as Cell[][])
+    const cols = (_.zip.apply(null, _.chunk(cells, 8)) as Cell[][])
         .map(col => genRow(col))
-    const diagsR = genDiagsR(fpCells)
+    const diagsR = genDiagsR(cells)
         .map(diag => genRow(diag))
     const diagsL = genDiagsR(
-        _.flatten(_.chunk(fpCells, 8).map(r => _.reverse(r)))
+        _.flatten(_.chunk(cells, 8).map(r => _.reverse(r)))
     )
         .map(diag => genRow(diag))
 
-    const stones = fpCells.filter(c => c != ".").length
+    const stones = cells.filter(c => c != ".").length
 
     return { rows, cols, diagsR, diagsL, stones }
 }
@@ -147,9 +145,9 @@ export function flip(desc: Board, x: number, y: number) {
     }
 }
 
-export function stones(desc: Board): number[] {
+export function stones(board: Board): number[] {
     return _.flatten(
-        desc.rows.map(row =>
+        board.rows.map(row =>
             _.range(8)
                 .map(i => (row >> ((7 - i) * 2)) & 0b11)
                 .map(c => {

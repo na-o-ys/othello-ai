@@ -6,7 +6,7 @@ import { createLogger } from "redux-logger"
 import { Provider } from "react-redux"
 import { Game, GameState } from "ui/containers/Game"
 import { reducers } from "ui/reducers"
-import { initialBoard } from "ui/constants"
+import * as Constants from "ui/constants"
 import { bench } from "bitboard/bench"
 
 const middleWares: Middleware[] = [
@@ -19,7 +19,7 @@ export function start(dom: HTMLElement | null) {
         reducers,
         {
             positions: [{
-                cells: initialBoard,
+                cells: Constants.initialBoard,
                 turn: "b"
             }],
             playerColor: "b"

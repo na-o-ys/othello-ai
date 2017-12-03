@@ -20,12 +20,24 @@ export interface Position {
 
 function mapStateToProps(state: GameState, ownProps: any) {
     const position = _.last(state.positions) as Position
-    const board = Board.fromUiState(position)
-    const [black, white] = Board.stones(board)
+    const board = position.turn == "b" ?
+        Board.fromUiState(position.cells) :
+        Board.reverse(Board.fromUiState(position.cells))
+    const [black, white] = position.turn == "b" ?
+        Board.stones(board) :
+        Board.stones(board).reverse()
+    let status = "normal"
+    if (Rule.movables(board).length == 0) {
+        if (Rule.movables(Board.reverse(board)).length == 0) {
+            status = "finished"
+        } else {
+            status = "pass"
+        }
+    }
     return {
         cells: position.cells,
         turn: position.turn,
-        shouldPass: Rule.movables(board).length == 0,
+        status,
         black,
         white,
         playerColor: state.playerColor,

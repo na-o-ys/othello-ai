@@ -4,7 +4,7 @@ import * as Rule from "bitboard/rule"
 
 export function randomBoard(): Board {
     const cells: any = Array(64).map(() => _.sample(["b", "w", "."]))
-    return fromUiState({ turn: "b", cells })
+    return fromUiState(cells)
 }
 
 export function bench() {
