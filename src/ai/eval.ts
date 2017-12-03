@@ -1,12 +1,12 @@
 import * as _ from "lodash"
 import * as Board from "bitboard/Board"
-import * as Rule from "bitboard/rule"
+import * as Move from "bitboard/move"
 
 const k = 3
 
 export function evaluate(desc: Board.Board): number {
     const rev = Board.reverse(desc)
-    const movablesScore = 100 * (Rule.movableIndices(desc).length - Rule.movableIndices(rev).length)
+    const movablesScore = 100 * (Move.movableIndices(desc).length - Move.movableIndices(rev).length)
     const lineScore = k * (calcLineScore(desc) - calcLineScore(rev))
     return movablesScore + lineScore
 }

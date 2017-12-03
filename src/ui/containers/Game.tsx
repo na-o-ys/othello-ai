@@ -4,7 +4,7 @@ import { Dispatch } from "redux"
 import * as actions from "ui/actions"
 import { Main, MainProps } from "ui/components/Main"
 import { Color, CellState, Place } from "ui/types"
-import * as Rule from "bitboard/rule"
+import * as Move from "bitboard/move"
 import * as Board from "bitboard/Board"
 
 export interface GameState {
@@ -27,8 +27,8 @@ function mapStateToProps(state: GameState, ownProps: any) {
         Board.stones(board) :
         Board.stones(board).reverse()
     let status = "normal"
-    if (Rule.movables(board).length == 0) {
-        if (Rule.movables(Board.reverse(board)).length == 0) {
+    if (Move.movables(board).length == 0) {
+        if (Move.movables(Board.reverse(board)).length == 0) {
             status = "finished"
         } else {
             status = "pass"

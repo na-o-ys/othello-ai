@@ -1,5 +1,5 @@
 import * as _ from "lodash"
-import { rowToCells, genRow, Row } from "bitboard/Board"
+import { Row } from "bitboard/Board"
 
 export function lookupMoveTable(row: number, x: number): number {
     return MoveTable[row][x]
@@ -37,6 +37,15 @@ export const MoveTable: number[][] = _.range(1<<16).map(i => {
         return flipCells
     })
 })
+
+export function rowToCells(row: number) {
+    return _.range(8).map(idx => {
+        const byte = (row >> (2 * (7 - idx))) & 3
+        if (byte === 0) return "b"
+        if (byte === 1) return "w"
+        return "."
+    })
+}
 
 // debug
 

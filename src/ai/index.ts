@@ -1,5 +1,5 @@
 import * as _ from "lodash"
-import * as Rule from "bitboard/rule"
+import * as Move from "bitboard/move"
 import { Board, reverse, stones } from "bitboard/Board"
 import { evaluate } from "ai/eval"
 
@@ -25,7 +25,7 @@ export function run(board: Board): MoveScore[] {
 
 function iterativeDeepning(board: Board): MoveScore[] {
     console.log("iterative deepning")
-    const movables = Rule.movables(board)
+    const movables = Move.movables(board)
     const timelimit = Date.now() + TimeoutMS
     let scores: MoveScore[] = []
 
@@ -33,7 +33,7 @@ function iterativeDeepning(board: Board): MoveScore[] {
         try {
             scores = movables.map(place => ({
                 score: -alphaBetaEval(
-                    reverse(Rule.move(board, place.x, place.y)),
+                    reverse(Move.move(board, place.x, place.y)),
                     depth - 1,
                     -MaxScore,
                     -MinScore,
@@ -52,10 +52,10 @@ function iterativeDeepning(board: Board): MoveScore[] {
 function alphaBetaEval(board: Board, depth: number, a: number, b: number, tl: number): number {
     if (Date.now() > tl) throw "tle"
     if (depth <= 0) return evaluate(board)
-    const movables = Rule.movables(board)
+    const movables = Move.movables(board)
     if (movables.length == 0) return -alphaBetaEval(reverse(board), depth - 1, -b, -a, tl)
     for (const move of movables) {
-        const nextDesc = reverse(Rule.move(board, move.x, move.y))
+        const nextDesc = reverse(Move.move(board, move.x, move.y))
         a = _.max([a, -alphaBetaEval(nextDesc, depth - 1, -b , -a, tl)]) as number
         if (a >= b) return a
     }
@@ -64,10 +64,10 @@ function alphaBetaEval(board: Board, depth: number, a: number, b: number, tl: nu
 
 function fullSearch(board: Board): MoveScore[] {
     console.log("full search")
-    const movables = Rule.movables(board)        
+    const movables = Move.movables(board)
     const scores = movables.map(place => ({
         score: -alphaBetaFull(
-            reverse(Rule.move(board, place.x, place.y)),
+            reverse(Move.move(board, place.x, place.y)),
             0,
             -MaxScore,
             -MinScore
@@ -80,11 +80,11 @@ function fullSearch(board: Board): MoveScore[] {
 function alphaBetaFull(board: Board, passes: number, a: number, b: number): number {
     const [black, white] = stones(board)
     if (board.stones == 64) return black - white
-    const movables = Rule.movables(board)
+    const movables = Move.movables(board)
     if (movables.length == 0 && passes > 0) return black - white
     if (movables.length == 0) return -alphaBetaFull(reverse(board), passes + 1, -b, -a)
     for (const move of movables) {
-        const nextDesc = reverse(Rule.move(board, move.x, move.y))
+        const nextDesc = reverse(Move.move(board, move.x, move.y))
         a = _.max([a, -alphaBetaFull(nextDesc, passes, -b , -a)]) as number
         if (a >= b) return a
     }
