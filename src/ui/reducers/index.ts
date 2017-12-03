@@ -17,7 +17,9 @@ function cells(state: CellState[], action: Action): CellState[] {
 function move(state: GameState, place?: Place): GameState {
     const latest = _.last(state.positions) as Position
     const nextTurn: Color = latest.turn == "b" ? "w" : "b"
-    const board = fromUiState(latest)
+    const board = latest.turn == "b" ?
+        fromUiState(latest.cells) :
+        reverse(fromUiState(latest.cells))
 
     if (!place) return {
         ...state,
@@ -60,8 +62,10 @@ export function reducers(state: GameState, action: Action): GameState  {
     }
 
     if (action.type == "launch_ai" && latestPosition.turn != state.playerColor) {
-        const board = fromUiState(latestPosition)
-        const moves = Ai.run(board, 6)
+        const board = latestPosition.turn == "b" ?
+            fromUiState(latestPosition.cells) :
+            reverse(fromUiState(latestPosition.cells))
+        const moves = Ai.run(board)
 
         console.log("--- ai moves")
         console.log(moves.map(m => `${m.place.x},${m.place.y} ${m.score}`))
@@ -76,7 +80,7 @@ export function reducers(state: GameState, action: Action): GameState  {
         while (positions.length > 0 && (_.last(positions) as Position).turn != currTurn) {
             positions.pop()
         }
-        return { ...state, positions }
+        return { ...state, positions, latestMove: undefined }
     }
 
     return state

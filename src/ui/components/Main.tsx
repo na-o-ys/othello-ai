@@ -13,11 +13,13 @@ export interface MainProps {
     onClickPass: () => void,
     onClickPrev: () => void,
     launchAi: () => void,
-    shouldPass: boolean,
+    status: Status,
     playerColor: Color,
     black: number,
     white: number
 }
+
+export type Status = "normal" | "pass" | "finished"
 
 export class Main extends React.Component<MainProps, {}> {
     constructor(readonly props: MainProps) {
@@ -31,7 +33,7 @@ export class Main extends React.Component<MainProps, {}> {
                 .map(row => row.join(""))
                 .join("\n")
         )
-        if (this.props.turn != this.props.playerColor) {
+        if (this.props.turn != this.props.playerColor && this.props.status == "normal") {
             process.nextTick(() => this.props.launchAi())
         }
     }
@@ -45,7 +47,7 @@ export class Main extends React.Component<MainProps, {}> {
                     highlight={this.props.latestMove}
                 />
                 <Control
-                    shouldPass={this.props.shouldPass}
+                    shouldPass={this.props.status == "pass"}
                     onClickPass={this.props.onClickPass}
                     onClickPrev={this.props.onClickPrev}
                     black={this.props.black}

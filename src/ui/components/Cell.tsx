@@ -28,7 +28,7 @@ const cellStyle = (highlight: boolean, scale: number = 1) => ({
     width: style.cellWidth * scale,
     height: style.cellWidth * scale,
     margin: style.cellMargin * scale,
-    background: highlight ? "#5d5" : "#090"
+    background: highlight ? "#5d5" : "#009900"
 })
 
 const stoneStyle = (color: Color, scale: number = 1) => ({
@@ -36,6 +36,6 @@ const stoneStyle = (color: Color, scale: number = 1) => ({
     width: (style.cellWidth - style.stoneMargin * 2) * scale,
     height: (style.cellWidth - style.stoneMargin * 2) * scale,
     borderRadius: style.cellWidth * scale,
-    background: color == "b" ? "#000" : "#fff",
+    background: color == "b" ? "#202720" : "#fff",
     margin: style.stoneMargin
 })
