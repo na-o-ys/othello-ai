@@ -21,7 +21,7 @@ export const Control = (props: ControlProps) => (
             {
                 props.shouldPass ?
                     <span onClick={props.onClickPass}>Pass</span> :
-                    <span>Pass</span>
+                    <span className="disabled">Pass</span>
             }
         </div>
     </div>

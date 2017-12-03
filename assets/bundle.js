@@ -21113,14 +21113,14 @@ const cellStyle = (highlight, scale = 1) => ({
     width: style.cellWidth * scale,
     height: style.cellWidth * scale,
     margin: style.cellMargin * scale,
-    background: highlight ? "#5d5" : "#090"
+    background: highlight ? "#5d5" : "#009900"
 });
 const stoneStyle = (color, scale = 1) => ({
     display: "inline-block",
     width: (style.cellWidth - style.stoneMargin * 2) * scale,
     height: (style.cellWidth - style.stoneMargin * 2) * scale,
     borderRadius: style.cellWidth * scale,
-    background: color == "b" ? "#000" : "#fff",
+    background: color == "b" ? "#202720" : "#fff",
     margin: style.stoneMargin
 });
 
@@ -21143,7 +21143,7 @@ exports.Control = (props) => (React.createElement("div", { style: controlStyle()
         React.createElement("span", { onClick: props.onClickPrev, style: { marginRight: 10 } }, "Prev"),
         props.shouldPass ?
             React.createElement("span", { onClick: props.onClickPass }, "Pass") :
-            React.createElement("span", null, "Pass"))));
+            React.createElement("span", { className: "disabled" }, "Pass"))));
 const controlStyle = (scale = 1) => ({
     width: style.mainWidth,
     height: style.controlHeight,
@@ -21301,7 +21301,7 @@ function reducers(state, action) {
         while (positions.length > 0 && _.last(positions).turn != currTurn) {
             positions.pop();
         }
-        return Object.assign({}, state, { positions });
+        return Object.assign({}, state, { positions, latestMove: undefined });
     }
     return state;
 }

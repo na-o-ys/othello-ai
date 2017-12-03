@@ -80,7 +80,7 @@ export function reducers(state: GameState, action: Action): GameState  {
         while (positions.length > 0 && (_.last(positions) as Position).turn != currTurn) {
             positions.pop()
         }
-        return { ...state, positions }
+        return { ...state, positions, latestMove: undefined }
     }
 
     return state
