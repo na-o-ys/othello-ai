@@ -40,9 +40,8 @@ export function fromUiState({ turn, cells }: UiPosition): Board {
     return { rows, cols, diagsR, diagsL, stones }
 }
 
-export function toUiState(desc: Board, turn: UiTypes.Color): UiTypes.CellState[] {
-    const cells = rowsToUiCells(desc.rows)
-    return turn == "b" ? cells : reverseColor(cells)
+export function toUiState(desc: Board): UiTypes.CellState[] {
+    return rowsToUiCells(desc.rows)
 }
 
 type Cell = "." | "b" | "w"

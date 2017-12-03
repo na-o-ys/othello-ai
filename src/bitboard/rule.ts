@@ -1,5 +1,5 @@
 import * as _ from "lodash"
-import { Board, fromUiState, toUiState, rowToCells, flip } from "bitboard/Board"
+import { Board, fromUiState, rowToCells, flip } from "bitboard/Board"
 import { MoveTable, lookupMoveTable } from "bitboard/MoveTable"
 import * as UiTypes from "ui/types"
 

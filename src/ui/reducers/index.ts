@@ -14,60 +14,52 @@ function cells(state: CellState[], action: Action): CellState[] {
     return state
 }
 
-const playerColor: Color = "b"
+function move(state: GameState, place?: Place): GameState {
+    const latest = _.last(state.positions) as Position
+    const nextTurn: Color = latest.turn == "b" ? "w" : "b"
+    const board = fromUiState(latest)
+
+    if (!place) return {
+        positions: _.concat(
+            state.positions,
+            [{
+                cells: latest.cells,
+                turn: nextTurn
+            }]
+        )
+    }
+
+    if (!Rule.canMove(board, place.x, place.y)) return state
+
+    const nextBoard = latest.turn == "b" ?
+        Rule.move(board, place.x, place.y) :
+        reverse(Rule.move(board, place.x, place.y))
+
+    return {
+        positions: _.concat(
+            state.positions,
+            [{
+                cells: toUiState(nextBoard),
+                turn: nextTurn
+            }]
+        )
+    }
+}
 
 export function reducers(state: GameState, action: Action): GameState  {
-    if (action.type == "click_cell") {
-        const latest = _.last(state.positions) as Position
-        const desc = fromUiState(latest)
-        console.log(Rule.movables(desc))
-        if (latest.turn != playerColor) return state
-        if (!Rule.canMove(desc, action.place.x, action.place.y)) return state
+    if (action.type == "click_cell") return move(state, action.place)
 
-        const moved = Rule.move(desc, action.place.x, action.place.y)
-
-        const aiMoves = Ai.run(reverse(moved), 6)
-        console.log(aiMoves[0][1])
-        console.log(aiMoves.map((m: any) => [m[0], [m[1].x, m[1].y].join()]))
-        const aiMoved = reverse(Rule.move(reverse(moved), aiMoves[0][1].x, aiMoves[0][1].y))
-
-        return {
-            positions: _.concat(
-                state.positions,
-                [{
-                    cells: toUiState(aiMoved, playerColor),
-                    turn: playerColor
-                }]
-            )
-        }
-    }
-
-    if (action.type == "click_pass") {
-        const latest = _.last(state.positions) as Position
-        const desc = fromUiState(latest)
-        const aiMoves = Ai.run(reverse(desc), 6)
-        console.log(aiMoves[0][1])
-        console.log(aiMoves.map((m: any) => [m[0], [m[1].x, m[1].y].join()]))
-        const aiMoved = reverse(Rule.move(reverse(desc), aiMoves[0][1].x, aiMoves[0][1].y))
-
-        return {
-            positions: _.concat(
-                state.positions,
-                [{
-                    cells: toUiState(aiMoved, playerColor),
-                    turn: playerColor
-                }]
-            )
-        }
-    }
+    if (action.type == "click_pass") return move(state)
 
     if (action.type == "click_prev") {
-        return {
-            positions: state.positions.slice(
-                0,
-                state.positions.length - 1
-            )
+        let positions = state.positions
+        if (positions.length <= 1) return { positions }
+        const currTurn = (_.last(positions) as Position).turn
+        positions.pop()
+        while (positions.length > 0 && (_.last(positions) as Position).turn != currTurn) {
+            positions.pop()
         }
+        return { positions }
     }
 
     return state
