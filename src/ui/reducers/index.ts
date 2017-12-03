@@ -38,6 +38,7 @@ function move(state: GameState, place?: Place): GameState {
 
     return {
         ...state,
+        latestMove: place,
         positions: _.concat(
             state.positions,
             [{

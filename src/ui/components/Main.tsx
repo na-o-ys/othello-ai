@@ -7,6 +7,7 @@ import * as style from "ui/constants/style"
 
 export interface MainProps {
     cells: CellState[],
+    latestMove?: Place
     turn: Color,
     onClickCell: OnClickCell,
     onClickPass: () => void,
@@ -38,7 +39,11 @@ export class Main extends React.Component<MainProps, {}> {
     render() {
         return (
             <div style={mainStyle()}>
-                <Board cells={this.props.cells} onClickCell={this.props.onClickCell} />
+                <Board
+                    cells={this.props.cells}
+                    onClickCell={this.props.onClickCell}
+                    highlight={this.props.latestMove}
+                />
                 <Control
                     shouldPass={this.props.shouldPass}
                     onClickPass={this.props.onClickPass}

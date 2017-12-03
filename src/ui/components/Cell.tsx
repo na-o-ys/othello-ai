@@ -6,13 +6,14 @@ export interface CellProps {
     place: Place,
     state: CellState,
     scale?: number,
+    highlight: boolean,
     onClick: () => void
 }
 
 
 export const Cell = (props: CellProps) => (
     <div
-        style={cellStyle()}
+        style={cellStyle(props.highlight)}
         onClick={props.onClick}
     >
         { props.state != "." ?
@@ -22,12 +23,12 @@ export const Cell = (props: CellProps) => (
     </div>
 )
 
-const cellStyle = (scale: number = 1) => ({
+const cellStyle = (highlight: boolean, scale: number = 1) => ({
     float: "left",
     width: style.cellWidth * scale,
     height: style.cellWidth * scale,
     margin: style.cellMargin * scale,
-    background: "#090"
+    background: highlight ? "#5d5" : "#090"
 })
 
 const stoneStyle = (color: Color, scale: number = 1) => ({

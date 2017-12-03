@@ -9,7 +9,8 @@ import * as Board from "bitboard/Board"
 
 export interface GameState {
     positions: Position[],
-    playerColor: Color
+    playerColor: Color,
+    latestMove?: Place
 }
 
 export interface Position {
@@ -27,7 +28,8 @@ function mapStateToProps(state: GameState, ownProps: any) {
         shouldPass: Rule.movables(board).length == 0,
         black,
         white,
-        playerColor: state.playerColor
+        playerColor: state.playerColor,
+        latestMove: state.latestMove
     }
 }
 
@@ -40,4 +42,4 @@ function mapDispatchToProps(dispatch: Dispatch<0>): {} {
     }
 }
 
-export const Game = connect(mapStateToProps, mapDispatchToProps)(Main)
+export const Game: any = connect<any>(mapStateToProps, mapDispatchToProps)(Main)
