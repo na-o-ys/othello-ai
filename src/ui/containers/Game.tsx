@@ -8,7 +8,8 @@ import * as Rule from "bitboard/rule"
 import * as Board from "bitboard/Board"
 
 export interface GameState {
-    positions: Position[]
+    positions: Position[],
+    playerColor: Color
 }
 
 export interface Position {
@@ -25,7 +26,8 @@ function mapStateToProps(state: GameState, ownProps: any) {
         turn: position.turn,
         shouldPass: Rule.movables(board).length == 0,
         black,
-        white
+        white,
+        playerColor: state.playerColor
     }
 }
 
@@ -33,7 +35,8 @@ function mapDispatchToProps(dispatch: Dispatch<0>): {} {
     return {
         onClickCell(place: Place) { dispatch(actions.clickCell(place)) },
         onClickPrev() { dispatch(actions.clickPrev) },
-        onClickPass() { dispatch(actions.clickPass) }
+        onClickPass() { dispatch(actions.clickPass) },
+        launchAi() { dispatch(actions.aiMove) }
     }
 }
 

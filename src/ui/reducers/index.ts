@@ -20,6 +20,7 @@ function move(state: GameState, place?: Place): GameState {
     const board = fromUiState(latest)
 
     if (!place) return {
+        ...state,
         positions: _.concat(
             state.positions,
             [{
@@ -36,6 +37,7 @@ function move(state: GameState, place?: Place): GameState {
         reverse(Rule.move(board, place.x, place.y))
 
     return {
+        ...state,
         positions: _.concat(
             state.positions,
             [{
@@ -47,19 +49,33 @@ function move(state: GameState, place?: Place): GameState {
 }
 
 export function reducers(state: GameState, action: Action): GameState  {
-    if (action.type == "click_cell") return move(state, action.place)
+    const latestPosition = state.positions[state.positions.length - 1]
+    if (action.type == "click_cell" && latestPosition.turn == state.playerColor) {
+        return move(state, action.place)
+    }
 
-    if (action.type == "click_pass") return move(state)
+    if (action.type == "click_pass" && latestPosition.turn == state.playerColor) {
+        return move(state)
+    }
+
+    if (action.type == "launch_ai" && latestPosition.turn != state.playerColor) {
+        const board = fromUiState(latestPosition)
+        const moves = Ai.run(board, 6)
+
+        console.log("--- ai moves")
+        console.log(moves.map(m => `${m.place.x},${m.place.y} ${m.score}`))
+        return move(state, moves[0].place)
+    }
 
     if (action.type == "click_prev") {
         let positions = state.positions
-        if (positions.length <= 1) return { positions }
+        if (positions.length <= 1) return { ...state, positions }
         const currTurn = (_.last(positions) as Position).turn
         positions.pop()
         while (positions.length > 0 && (_.last(positions) as Position).turn != currTurn) {
             positions.pop()
         }
-        return { positions }
+        return { ...state, positions }
     }
 
     return state

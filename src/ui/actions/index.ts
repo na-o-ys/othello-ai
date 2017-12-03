@@ -1,6 +1,6 @@
 import { Place } from "ui/types"
 
-export type Action = ClickCellAction | ClickPrevAction | ClickPassAction
+export type Action = ClickCellAction | ClickPrevAction | ClickPassAction | LaunchAiAction
 
 interface ClickCellAction {
     type: "click_cell"
@@ -19,3 +19,8 @@ interface ClickPassAction {
     type: "click_pass"
 }
 export const clickPass = { type: "click_pass" }
+
+interface LaunchAiAction {
+    type: "launch_ai"
+}
+export const aiMove = { type: "launch_ai" }

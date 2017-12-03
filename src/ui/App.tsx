@@ -21,7 +21,8 @@ export function start(dom: HTMLElement | null) {
             positions: [{
                 cells: initialBoard,
                 turn: "b"
-            }]
+            }],
+            playerColor: "b"
         },
         applyMiddleware(...middleWares)
     )

@@ -11,7 +11,9 @@ export interface MainProps {
     onClickCell: OnClickCell,
     onClickPass: () => void,
     onClickPrev: () => void,
+    launchAi: () => void,
     shouldPass: boolean,
+    playerColor: Color,
     black: number,
     white: number
 }
@@ -28,6 +30,9 @@ export class Main extends React.Component<MainProps, {}> {
                 .map(row => row.join(""))
                 .join("\n")
         )
+        if (this.props.turn != this.props.playerColor) {
+            process.nextTick(() => this.props.launchAi())
+        }
     }
 
     render() {
