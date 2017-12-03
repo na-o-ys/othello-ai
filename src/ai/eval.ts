@@ -2,7 +2,7 @@ import * as _ from "lodash"
 import * as Board from "bitboard/Board"
 import * as Rule from "bitboard/rule"
 
-const k = 1
+const k = 3
 
 export function evaluate(desc: Board.Board): number {
     const rev = Board.reverse(desc)
@@ -29,10 +29,10 @@ const rowScores = [
     [".xx", 100],
     ["..x", 100],
     ["x.x", 100],
-    ["x..", 50],
+    ["x..", 10],
     ["...", 0],
-    ["xx.", -100],
-    [".x.", -100]
+    ["xx.", -50],
+    [".x.", -50]
 ]
     .sort((a, b) => a[0] > b[0] ? 1 : -1)
     .map(e => e[1] as number)
