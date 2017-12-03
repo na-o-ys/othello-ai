@@ -4,27 +4,27 @@ import * as Move from "bitboard/move"
 
 const k = 3
 
-export function evaluate(desc: Board.Board): number {
-    const rev = Board.reverse(desc)
-    const movablesScore = 100 * (Move.movableIndices(desc).length - Move.movableIndices(rev).length)
-    const lineScore = k * (calcLineScore(desc) - calcLineScore(rev))
+export function evaluate(board: Board.Board): number {
+    const rev = Board.reverse(board)
+    const movablesScore = 100 * (Move.movableIndices(board).length - Move.movableIndices(rev).length)
+    const lineScore = k * (calcLineScore(board) - calcLineScore(rev))
     return movablesScore + lineScore
 }
 
-function calcLineScore(desc: Board.Board): number {
+function calcLineScore(board: Board.Board): number {
     return [
-        desc.rows[0],
-        desc.rows[7],
-        desc.cols[0],
-        desc.cols[7],
-        desc.diagsL[7],
-        desc.diagsR[7]
+        board.rows[0],
+        board.rows[7],
+        board.cols[0],
+        board.cols[7],
+        board.diagsL[7],
+        board.diagsR[7]
     ]
         .map(rowScore)
         .reduce((acc, crr) => acc + crr, 0)
 }
 
-const rowScores = [
+const LineScores = [
     ["xxx", 100],
     [".xx", 100],
     ["..x", 100],
@@ -51,5 +51,5 @@ function rowScore(row: Board.Row): number {
     if (((row >> 2) & 0b11) == 0) right += 1
     right <<= 1
     if ((row & 0b11) == 0) right += 1
-    return rowScores[left] + rowScores[right]
+    return LineScores[left] + LineScores[right]
 }

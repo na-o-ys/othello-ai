@@ -55,8 +55,8 @@ function alphaBetaEval(board: Board, depth: number, a: number, b: number, tl: nu
     const movables = Move.movables(board)
     if (movables.length == 0) return -alphaBetaEval(reverse(board), depth - 1, -b, -a, tl)
     for (const move of movables) {
-        const nextDesc = reverse(Move.move(board, move.x, move.y))
-        a = _.max([a, -alphaBetaEval(nextDesc, depth - 1, -b , -a, tl)]) as number
+        const next = reverse(Move.move(board, move.x, move.y))
+        a = _.max([a, -alphaBetaEval(next, depth - 1, -b , -a, tl)]) as number
         if (a >= b) return a
     }
     return a
