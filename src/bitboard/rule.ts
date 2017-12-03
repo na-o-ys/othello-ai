@@ -3,7 +3,7 @@ import { Board, rowToCells, flip } from "bitboard/Board"
 import { MoveTable, lookupMoveTable } from "bitboard/MoveTable"
 import * as UiTypes from "ui/types"
 
-export function movables(desc: Board): { x: number, y: number }[] {
+export function movables(desc: Board): UiTypes.Place[] {
     return movableIndices(desc)
         .map(i => ({ x: i % 8, y: (i / 8) >> 0}))
 }

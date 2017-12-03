@@ -19,7 +19,7 @@ export function start(dom: HTMLElement | null) {
         reducers,
         {
             positions: [{
-                cells: Constants.check2,
+                cells: Constants.initialBoard,
                 turn: "b"
             }],
             playerColor: "b"
