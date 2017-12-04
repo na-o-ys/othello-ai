@@ -33,8 +33,8 @@ export class Main extends React.Component<MainProps, {}> {
                 .map(row => row.join(""))
                 .join("\n")
         )
-        if (this.props.turn != this.props.playerColor && this.props.status == "normal") {
-            process.nextTick(() => this.props.launchAi())
+        if (this.props.turn != this.props.playerColor && this.props.status != "finished") {
+            setTimeout(() => this.props.launchAi(), 20)
         }
     }
 

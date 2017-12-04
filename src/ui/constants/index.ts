@@ -100,6 +100,17 @@ ww....ww
 www..www
 `)
 
+export const wpass: CellState[] = toState(`
+bbbbbbb.
+wwwwbwwb
+.wwwwwwb
+.wwbwwwb
+.wwbwbbb
+wwbbwbbb
+wwwwwwbb
+bbbbbbbb
+`)
+
 function toState(str: string) {
     return _.flatten(str.split("\n").slice(1, 9).map(r => r.split("") as CellState[]))
 }
