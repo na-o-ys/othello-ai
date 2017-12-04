@@ -69,7 +69,7 @@ export function reducers(state: GameState, action: Action): GameState  {
 
         console.log("--- ai moves")
         console.log(moves.map(m => `${m.place.x},${m.place.y} ${m.score}`))
-        return move(state, moves[0].place)
+        return move(state, moves.length > 0 ? moves[0].place : undefined)
     }
 
     if (action.type == "click_prev") {
